@@ -188,7 +188,7 @@ export class SearchPageComponent extends Component {
     const {
       intl,
       listings = [],
-      location,
+      location,history,
       onManageDisableScrolling,
       pagination,
       scrollingDisabled,
@@ -199,12 +199,22 @@ export class SearchPageComponent extends Component {
       config,onUpdateCarts,
     } = this.props;
 
-    const onToggleCarts = (e, isCart) => handleToggleCarts(e,{
+    // const onToggleCarts = (listingId,isCart) => handleToggleCarts({
+    //   currentUser,
+    //   onUpdateCarts,
+    //   listingId,
+    //   routes: routeConfiguration,isCart,
+    //   location,
+    // });
+    const onToggleCarts = (listingId, isCart) => handleToggleCarts({
       currentUser,
       onUpdateCarts,
+      params: { id: listingId },
+      routes: routeConfiguration,
       location,
-    },isCart);
-    
+      history,
+      isCart,
+    });
 console.log('onToggleCarts',onToggleCarts);
     const { listingFields } = config?.listing || {};
     const { defaultFilters: defaultFiltersConfig, sortConfig } = config?.search || {};
@@ -541,6 +551,7 @@ const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onUpdateCarts: (payload) => dispatch(updateProfile(payload)), // add this row
+  
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

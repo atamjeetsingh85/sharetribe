@@ -328,8 +328,26 @@ const OrderPanel = props => {
     listing.id.uuid
   );
   
-  const toggleFavorites = () => onToggleFavorites(isFavorite);
+  // const toggleFavorites = () => onToggleFavorites(isFavorite);
   
+  
+  // const favoriteButton = isFavorite ? (
+  //   <SecondaryButton
+  //     className={css.favoriteButton}
+  //     onClick={toggleFavorites}
+  //   >
+  //     <FormattedMessage id="OrderPanel.unfavoriteButton" />
+  //   </SecondaryButton>
+  // ) : (
+  //   <Button className={css.favoriteButton} onClick={toggleFavorites}>
+  //     <FormattedMessage id="OrderPanel.addFavoriteButton" />
+  //   </Button>
+  // );
+  // const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
+  //   listing.id.uuid
+  // );
+  
+  const toggleFavorites = () => onToggleFavorites(isFavorite);
   
   const favoriteButton = isFavorite ? (
     <SecondaryButton
@@ -343,7 +361,6 @@ const OrderPanel = props => {
       <FormattedMessage id="OrderPanel.addFavoriteButton" />
     </Button>
   );
-  
 
   return (
     <div className={classes}>

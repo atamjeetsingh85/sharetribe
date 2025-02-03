@@ -31,6 +31,10 @@ const SearchResultsPanel = props => {
     setActiveListing,
     isMapVariant = true,onToggleCarts,currentUser
   } = props;
+
+  console.log("currentUser",currentUser);
+  console.log("onToggleCarts",onToggleCarts);
+
   const classes = classNames(rootClassName || css.root, className);
   const paginationLinks =
     pagination && pagination.totalPages > 1 ? (
@@ -41,7 +45,7 @@ const SearchResultsPanel = props => {
         pagination={pagination}
       />
     ) : null;
- 
+
   const cardRenderSizes = isMapVariant => {
     if (isMapVariant) {
       // Panel width relative to the viewport
@@ -66,14 +70,18 @@ const SearchResultsPanel = props => {
       ].join(', ');
     }
   };
+  
   return (
     <div className={classes} >
       <div className={isMapVariant ? css.listingCardsMapVariant : css.listingCards}>
         {listings.map(l =>{
            const isCart = currentUser?.attributes?.profile?.privateData?.carts?.includes(l.id.uuid);
-           const toggleCarts = () => onToggleCarts(l.id.uuid);
+           const toggleCarts = (e) =>   {  
+            console.log("toggleCarts",l.id.uuid,isCart);
+            e.preventDefault();
+            onToggleCarts(l.id.uuid, isCart);}
           
-       return (<div>
+       return (<div key={l.id.uuid}> 
           <ListingCard       
             className={css.listingCard}
             key={l.id.uuid}
@@ -86,13 +94,13 @@ const SearchResultsPanel = props => {
             <SecondaryButton key={l.id.uuid}
 
               className={css.cartButton}
-              onClick={(e)=>toggleCarts(e)}
+              onClick={toggleCarts}
             >
               <FormattedMessage id="SearchResultPanel.uncartButton" />
             </SecondaryButton>
           ) : (
             <Button className={css.cartButton} key={l.id.uuid}
-            onClick={(e)=>toggleCarts(e)}>
+            onClick={toggleCarts}>
               <FormattedMessage id="SearchResultPanel.addCartButton" />
             </Button>
           )}       </div></div>

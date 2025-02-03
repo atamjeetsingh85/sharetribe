@@ -51,7 +51,6 @@ const cartListingsPageReducer = (state = initialState, action = {}) => {
       return state;
   }
 };
-
 export default cartListingsPageReducer;
 
 // ================ Action creators ================ //

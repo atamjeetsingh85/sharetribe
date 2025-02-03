@@ -295,13 +295,18 @@ export const ListingPageComponent = props => {
     : 'https://schema.org/OutOfStock';
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
+  // const onToggleFavorites = handleToggleFavorites({
+  //   ...commonParams,
+  //   currentUser,
+  //   onUpdateFavorites,
+  //   location,
+  // });
   const onToggleFavorites = handleToggleFavorites({
     ...commonParams,
     currentUser,
     onUpdateFavorites,
     location,
   });
- 
 
   return (
     
@@ -433,7 +438,7 @@ export const ListingPageComponent = props => {
               dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
               marketplaceName={config.marketplaceName}
               onToggleFavorites={onToggleFavorites}
-             
+              currentUser={currentUser}
             />
           </div>
         </div>
