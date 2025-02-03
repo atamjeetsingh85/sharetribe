@@ -265,6 +265,8 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
   return sdk.listings
     .query(params)
     .then(response => {
+      console.log(response, '((( ))) => response');
+      
       const listingFields = config?.listing?.listingFields;
       const sanitizeConfig = { listingFields };
 

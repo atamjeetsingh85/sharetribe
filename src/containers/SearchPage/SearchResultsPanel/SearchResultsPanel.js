@@ -2,9 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { propTypes } from '../../../util/types';
-import { ListingCard, PaginationLinks } from '../../../components';
+import { ListingCard, PaginationLinks,Button,SecondaryButton } from '../../../components';
 
 import css from './SearchResultsPanel.module.css';
+import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 
 /**
  * SearchResultsPanel component
@@ -28,10 +29,9 @@ const SearchResultsPanel = props => {
     pagination,
     search,
     setActiveListing,
-    isMapVariant = true,
+    isMapVariant = true,onToggleCarts,currentUser
   } = props;
   const classes = classNames(rootClassName || css.root, className);
-
   const paginationLinks =
     pagination && pagination.totalPages > 1 ? (
       <PaginationLinks
@@ -41,7 +41,7 @@ const SearchResultsPanel = props => {
         pagination={pagination}
       />
     ) : null;
-
+ 
   const cardRenderSizes = isMapVariant => {
     if (isMapVariant) {
       // Panel width relative to the viewport
@@ -66,19 +66,38 @@ const SearchResultsPanel = props => {
       ].join(', ');
     }
   };
-
   return (
-    <div className={classes}>
+    <div className={classes} >
       <div className={isMapVariant ? css.listingCardsMapVariant : css.listingCards}>
-        {listings.map(l => (
-          <ListingCard
+        {listings.map(l =>{
+           const isCart = currentUser?.attributes?.profile?.privateData?.carts?.includes(l.id.uuid);
+           const toggleCarts = () => onToggleCarts(l.id.uuid);
+          
+       return (<div>
+          <ListingCard       
             className={css.listingCard}
             key={l.id.uuid}
             listing={l}
             renderSizes={cardRenderSizes(isMapVariant)}
             setActiveListing={setActiveListing}
           />
-        ))}
+          <div>
+          {isCart ? (
+            <SecondaryButton key={l.id.uuid}
+
+              className={css.cartButton}
+              onClick={(e)=>toggleCarts(e)}
+            >
+              <FormattedMessage id="SearchResultPanel.uncartButton" />
+            </SecondaryButton>
+          ) : (
+            <Button className={css.cartButton} key={l.id.uuid}
+            onClick={(e)=>toggleCarts(e)}>
+              <FormattedMessage id="SearchResultPanel.addCartButton" />
+            </Button>
+          )}       </div></div>
+
+        )})}
         {props.children}
       </div>
       {paginationLinks}

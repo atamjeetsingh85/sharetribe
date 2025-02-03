@@ -72,7 +72,8 @@ import {
   listingImages,
   handleContactUser,
   handleSubmitInquiry,
-  handleSubmit,
+  handleSubmit,handleToggleFavorites,
+ 
   priceForSchemaMaybe,
 } from './ListingPage.shared';
 import ActionBarMaybe from './ActionBarMaybe';
@@ -82,6 +83,8 @@ import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
+import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
+
 
 import css from './ListingPage.module.css';
 
@@ -125,7 +128,8 @@ export const ListingPageComponent = props => {
     onSendInquiry,
     onInitializeCardPaymentData,
     config,
-    routeConfiguration,
+    routeConfiguration, 
+  onUpdateFavorites,
     showOwnListingsOnly,
   } = props;
 
@@ -291,8 +295,16 @@ export const ListingPageComponent = props => {
     : 'https://schema.org/OutOfStock';
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
+  const onToggleFavorites = handleToggleFavorites({
+    ...commonParams,
+    currentUser,
+    onUpdateFavorites,
+    location,
+  });
+ 
 
   return (
+    
     <Page
       title={schemaTitle}
       scrollingDisabled={scrollingDisabled}
@@ -358,7 +370,11 @@ export const ListingPageComponent = props => {
               categoryConfiguration={config.categoryConfiguration}
               intl={intl}
             />
-
+            
+<SectionTextMaybe
+   text={publicData.extraFeatures}
+  heading={intl.formatMessage({ id: 'ListingPage.extraFeaturesTitle' })}
+/>
             <SectionMapMaybe
               geolocation={geolocation}
               publicData={publicData}
@@ -382,7 +398,7 @@ export const ListingPageComponent = props => {
           </div>
           <div className={css.orderColumnForProductLayout}>
             <OrderPanel
-              className={css.productOrderPanel}
+              className={css.productOrderPanel}      
               listing={currentListing}
               isOwnListing={isOwnListing}
               onSubmit={handleOrderSubmit}
@@ -416,6 +432,8 @@ export const ListingPageComponent = props => {
               marketplaceCurrency={config.currency}
               dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
               marketplaceName={config.marketplaceName}
+              onToggleFavorites={onToggleFavorites}
+             
             />
           </div>
         </div>
@@ -571,7 +589,9 @@ const mapDispatchToProps = dispatch => ({
   onSendInquiry: (listing, message) => dispatch(sendInquiry(listing, message)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onFetchTimeSlots: (listingId, start, end, timeZone) =>
-    dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
+    dispatch(fetchTimeSlots(listingId, start, end, timeZone)), 
+  onUpdateFavorites: (payload) => dispatch(updateProfile(payload)), // add this row
+ 
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

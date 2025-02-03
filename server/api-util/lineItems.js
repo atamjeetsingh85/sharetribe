@@ -197,12 +197,42 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
    * By default OrderBreakdown prints line items inside LineItemUnknownItemsMaybe if the lineItem code is not recognized. */
 
   const quantityOrSeats = !!units && !!seats ? { units, seats } : { quantity };
+  
   const order = {
     code,
     unitPrice,
     ...quantityOrSeats,
     includeFor: ['customer', 'provider'],
   };
+  const helmetFeePrice = orderData.hasHelmetFee ? resolveHelmetFeePrice(listing) : null;
+   const helmetFee = helmetFeePrice
+    ? [
+        {
+          code: 'line-item/helmet-rental-fee',
+           unitPrice: helmetFeePrice,
+           quantity: 1,
+           includeFor: ['customer', 'provider'],
+         },]:[];
+
+         const extraHelmetFeePrice = orderData.hasextraHelmetFee ? resolveHelmetFeePrice(listing) : null;
+         const extraHelmetFee = extraHelmetFeePrice
+          ? [
+              {
+                code: 'line-item/extra-helmet-rental-fee',
+                 unitPrice: extraHelmetFeePrice,
+                 quantity: 1,
+                 includeFor: ['customer', 'provider'],
+               },]:[];
+      
+      
+
+
+
+
+
+
+
+
 
   // Provider commission reduces the amount of money that is paid out to provider.
   // Therefore, the provider commission line-item should have negative effect to the payout total.
@@ -220,7 +250,7 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
     ? [
         {
           code: 'line-item/provider-commission',
-          unitPrice: calculateTotalFromLineItems([order]),
+          unitPrice: calculateTotalFromLineItems([order, ...helmetFee,...extraHelmetFee]),
           percentage: getNegation(providerCommission.percentage),
           includeFor: ['provider'],
         },
@@ -245,7 +275,7 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
   // Note: the order matters only if OrderBreakdown component doesn't recognize line-item.
   const lineItems = [
     order,
-    ...extraLineItems,
+    ...extraLineItems,...helmetFee,...extraHelmetFee,
     ...providerCommissionMaybe,
     ...customerCommissionMaybe,
   ];

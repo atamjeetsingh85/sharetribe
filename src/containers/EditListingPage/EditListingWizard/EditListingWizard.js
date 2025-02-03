@@ -1,6 +1,5 @@
 import React, { Component, useEffect } from 'react';
 import classNames from 'classnames';
-
 // Import configs and util modules
 import { useConfiguration } from '../../../context/configurationContext';
 import { useRouteConfiguration } from '../../../context/routeConfigurationContext';
@@ -53,7 +52,7 @@ import EditListingWizardTab, {
   DETAILS,
   PRICING,
   PRICING_AND_STOCK,
-  DELIVERY,
+  DELIVERY,  EXTRAFEATURES,
   LOCATION,
   AVAILABILITY,
   PHOTOS,
@@ -68,7 +67,7 @@ import css from './EditListingWizard.module.css';
 //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
 const TABS_DETAILS_ONLY = [DETAILS];
 const TABS_PRODUCT = [DETAILS, PRICING_AND_STOCK, DELIVERY, PHOTOS];
-const TABS_BOOKING = [DETAILS, LOCATION, PRICING, AVAILABILITY, PHOTOS];
+const TABS_BOOKING = [DETAILS,EXTRAFEATURES,AVAILABILITY, PRICING,LOCATION, PHOTOS];
 const TABS_INQUIRY = [DETAILS, LOCATION, PRICING, PHOTOS];
 const TABS_ALL = [...TABS_PRODUCT, ...TABS_BOOKING, ...TABS_INQUIRY];
 
@@ -142,7 +141,11 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
     labelKey = 'EditListingWizard.tabLabelPhotos';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.savePhotos`;
   }
-
+  else if (tab === EXTRAFEATURES) {
+    labelKey = 'EditListingWizard.tabLabelExtraFeatures';
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveExtraFeatures`;
+  }
+  
   return {
     label: intl.formatMessage({ id: labelKey }),
     submitButton: intl.formatMessage({ id: submitButtonKey }),
@@ -236,16 +239,25 @@ const tabCompleted = (tab, listing, config) => {
       );
     case PRICING:
       return !!price;
+      case EXTRAFEATURES:
+        return !!publicData.extraFeatures;
+
+        //return true;
+        // /** For a required attribute: **/
+
     case PRICING_AND_STOCK:
       return !!price;
     case DELIVERY:
       return !!deliveryOptionPicked;
+    
+
     case LOCATION:
       return !!(geolocation && publicData?.location?.address);
     case AVAILABILITY:
       return !!availabilityPlan;
     case PHOTOS:
       return images && images.length > 0;
+    
     default:
       return false;
   }

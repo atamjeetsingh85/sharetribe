@@ -12,8 +12,7 @@ import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { isBookingProcessAlias } from '../../transactions/transaction';
 
-import { AspectRatioWrapper, NamedLink, ResponsiveImage } from '../../components';
-
+import { AspectRatioWrapper, NamedLink, ResponsiveImage} from '../../components';
 import css from './ListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
@@ -114,7 +113,7 @@ export const ListingCard = props => {
         onMouseLeave: () => setActiveListing(null),
       }
     : null;
-
+    
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
       <AspectRatioWrapper
@@ -133,6 +132,7 @@ export const ListingCard = props => {
       </AspectRatioWrapper>
       <div className={css.info}>
         <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
+
         <div className={css.mainInfo}>
           <div className={css.title}>
             {richText(title, {

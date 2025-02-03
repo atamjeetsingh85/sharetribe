@@ -45,7 +45,7 @@ import {
   resolveLatestProcessName,
 } from '../../transactions/transaction';
 
-import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../components';
+import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2,Button, SecondaryButton,} from '../../components';
 
 import css from './OrderPanel.module.css';
 
@@ -60,6 +60,7 @@ const InquiryWithoutPaymentForm = loadable(() =>
     /* webpackChunkName: "InquiryWithoutPaymentForm" */ './InquiryWithoutPaymentForm/InquiryWithoutPaymentForm'
   )
 );
+
 const ProductOrderForm = loadable(() =>
   import(/* webpackChunkName: "ProductOrderForm" */ './ProductOrderForm/ProductOrderForm')
 );
@@ -222,7 +223,7 @@ const OrderPanel = props => {
     lineItemUnitType: lineItemUnitTypeMaybe,
     isOwnListing,
     onSubmit,
-    title,
+    title, 
     titleDesktop,
     author,
     authorLink,
@@ -238,9 +239,15 @@ const OrderPanel = props => {
     dayCountAvailableForBooking,
     marketplaceName,
     fetchLineItemsInProgress,
-    fetchLineItemsError,
+    fetchLineItemsError,currentUser,
+    onToggleFavorites,
     payoutDetailsWarning,
   } = props;
+  console.log(props,"PROPS")
+  const helmetFee = listing?.attributes?.publicData.helmetFee;
+  const extraHelmetFee = listing?.attributes?.publicData.extraHelmetFee;
+  console.log(helmetFee,"HELMET")
+    console.log(extraHelmetFee,"EXTRA HELMET FEE")
 
   const publicData = listing?.attributes?.publicData || {};
   const { listingType, unitType, transactionProcessAlias = '' } = publicData || {};
@@ -268,6 +275,7 @@ const OrderPanel = props => {
     );
   };
 
+  
   const timeZone = listing?.attributes?.availabilityPlan?.timezone;
   const isClosed = listing?.attributes?.state === LISTING_STATE_CLOSED;
 
@@ -316,6 +324,27 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
+  const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
+    listing.id.uuid
+  );
+  
+  const toggleFavorites = () => onToggleFavorites(isFavorite);
+  
+  
+  const favoriteButton = isFavorite ? (
+    <SecondaryButton
+      className={css.favoriteButton}
+      onClick={toggleFavorites}
+    >
+      <FormattedMessage id="OrderPanel.unfavoriteButton" />
+    </SecondaryButton>
+  ) : (
+    <Button className={css.favoriteButton} onClick={toggleFavorites}>
+      <FormattedMessage id="OrderPanel.addFavoriteButton" />
+    </Button>
+  );
+  
+
   return (
     <div className={classes}>
       <ModalInMobile
@@ -353,7 +382,7 @@ const OrderPanel = props => {
             <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
           </span>
         </div>
-
+        {favoriteButton} {/* Add this row */}
         {showPriceMissing ? (
           <PriceMissing />
         ) : showInvalidCurrency ? (
@@ -366,7 +395,7 @@ const OrderPanel = props => {
             lineItemUnitType={lineItemUnitType}
             onSubmit={onSubmit}
             price={price}
-            marketplaceCurrency={marketplaceCurrency}
+            marketplaceCurrency={marketplaceCurrency}withRouter
             dayCountAvailableForBooking={dayCountAvailableForBooking}
             listingId={listing.id}
             isOwnListing={isOwnListing}
@@ -403,6 +432,8 @@ const OrderPanel = props => {
             fetchLineItemsInProgress={fetchLineItemsInProgress}
             fetchLineItemsError={fetchLineItemsError}
             payoutDetailsWarning={payoutDetailsWarning}
+            helmetFee={helmetFee}
+            extraHelmetFee={extraHelmetFee}
           />
         ) : showProductOrderForm ? (
           <ProductOrderForm
@@ -474,5 +505,10 @@ const OrderPanel = props => {
     </div>
   );
 };
+OrderPanel.propTypes = {
+  rootClassName: string,
+  className: string,
+  onToggleFavorites: func.isRequired,
+  currentUser: propTypes.currentUser.isRequired,}
 
 export default compose(withRouter)(OrderPanel);

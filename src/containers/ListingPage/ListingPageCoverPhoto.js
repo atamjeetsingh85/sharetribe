@@ -350,6 +350,11 @@ export const ListingPageComponent = props => {
               categoryConfiguration={config.categoryConfiguration}
               intl={intl}
             />
+<div className={css.mobileHeading}>
+              <H4 as="h1" className={css.orderPanelTitle}>
+                <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+              </H4>
+            </div>
 
             <SectionMapMaybe
               geolocation={geolocation}

@@ -253,3 +253,21 @@ export const validSGID = message => value => {
 
 export const composeValidators = (...validators) => value =>
   validators.reduce((error, validator) => error || validator(value), VALID);
+
+export const validInstaURL = message => value => {
+  if (typeof value === 'undefined' || value === null) {
+    return message;
+  }
+
+  const disallowedChars = /[^-A-Za-z0-9+&@#/%?=~_|!:,.;()]/;
+  const protocolTokens = value.split(':');
+  const includesProtocol = protocolTokens.length > 1;
+  const usesHttpProtocol = includesProtocol && !!protocolTokens[0].match(/^(https?)/);
+
+  const invalidCharacters = !!value.match(disallowedChars);
+  const invalidProtocol = !(usesHttpProtocol || !includesProtocol);
+  const isExampleDotCom = !!value.match(/^(https?:\/\/example\.com|example\.com)/);
+  const isLocalhost = !!value.match(/^(https?:\/\/localhost($|:|\/)|localhost($|:|\/))/);
+
+  return invalidCharacters || invalidProtocol || isExampleDotCom || isLocalhost ? message : VALID;
+};

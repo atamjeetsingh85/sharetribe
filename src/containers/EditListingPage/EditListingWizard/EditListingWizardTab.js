@@ -7,7 +7,6 @@ import {
 } from '../../../util/urlHelpers';
 import { ensureListing } from '../../../util/data';
 import { createResourceLocatorString } from '../../../util/routes';
-
 // Import modules from this directory
 import EditListingAvailabilityPanel from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
 import EditListingDetailsPanel from './EditListingDetailsPanel/EditListingDetailsPanel';
@@ -16,6 +15,8 @@ import EditListingLocationPanel from './EditListingLocationPanel/EditListingLoca
 import EditListingPhotosPanel from './EditListingPhotosPanel/EditListingPhotosPanel';
 import EditListingPricingPanel from './EditListingPricingPanel/EditListingPricingPanel';
 import EditListingPricingAndStockPanel from './EditListingPricingAndStockPanel/EditListingPricingAndStockPanel';
+import EditListingExtraFeaturesPanel from './ EditListingExtraFeaturesPanel/EditListingExtraFeaturesPanel';
+
 
 import css from './EditListingWizardTab.module.css';
 
@@ -26,13 +27,14 @@ export const DELIVERY = 'delivery';
 export const LOCATION = 'location';
 export const AVAILABILITY = 'availability';
 export const PHOTOS = 'photos';
+export const EXTRAFEATURES = 'extra-features';
 
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [
   DETAILS,
   PRICING,
   PRICING_AND_STOCK,
-  DELIVERY,
+  DELIVERY,EXTRAFEATURES,
   LOCATION,
   AVAILABILITY,
   PHOTOS,
@@ -210,6 +212,14 @@ const EditListingWizardTab = props => {
         />
       );
     }
+    case EXTRAFEATURES: {
+      return (
+        <EditListingExtraFeaturesPanel
+          {...panelProps(EXTRAFEATURES)}
+        />
+      );
+    }
+
     case DELIVERY: {
       return (
         <EditListingDeliveryPanel {...panelProps(DELIVERY)} marketplaceCurrency={config.currency} />
@@ -255,6 +265,13 @@ const EditListingWizardTab = props => {
         />
       );
     }
+  
+    // case EXTRAFEATURES: {
+    //   return (
+    //     <BookingDatesForm          {...panelProps(EXTRAFEATURES)}
+    //     />
+    //   );
+    // }
     default:
       return null;
   }

@@ -390,6 +390,29 @@ class ProfileSettingsFormComponent extends Component {
                   <FormattedMessage id="ProfileSettingsForm.bioInfo" values={{ marketplaceName }} />
                 </p>
               </div>
+
+<div className={css.sectionContainer}>
+  <H4 as="h2" className={css.sectionTitle}>
+    <FormattedMessage id="ProfileSettingsForm.instagramUrlHeading" />
+  </H4>
+  <FieldTextInput
+    className={css.sectionTitle}
+    type="text"
+    id="instagramUrl"
+    name="instagramUrl"
+    label={intl.formatMessage({
+      id: 'ProfileSettingsForm.instagramUrlLabel',
+    })}
+    placeholder={intl.formatMessage({
+      id: 'ProfileSettingsForm.instagramUrlPlaceholder',
+    })}
+    validate={validators.validInstaURL(
+      intl.formatMessage({
+        id: 'ProfileSettingsForm.instagramUrlInvalid',
+      })
+    )}
+  />
+</div>
               <div className={classNames(css.sectionContainer, css.lastSection)}>
                 {userFieldProps.map(({ key, ...fieldProps }) => (
                   <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />

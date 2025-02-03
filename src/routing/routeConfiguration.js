@@ -39,6 +39,8 @@ const NoAccessPage = loadable(() => import(/* webpackChunkName: "NoAccessPage" *
 
 // Styleguide helps you to review current components and develop new ones
 const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePage" */ '../containers/StyleguidePage/StyleguidePage'));
+const FavoriteListingsPage = loadable(() => import('../containers/FavoriteListingsPage/FavoriteListingsPage'));
+const CartListingsPage = loadable(() => import('../containers/CartListingsPage/CartListingsPage'));
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -72,6 +74,8 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
   const isPrivateMarketplace = accessControlConfig?.marketplace?.private === true;
   const authForPrivateMarketplace = isPrivateMarketplace ? { auth: true } : {};
   
+
+
   return [
     {
       path: '/',
@@ -86,12 +90,30 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       loadData: pageDataLoadingAPI.CMSPage.loadData,
     },
     {
+      path: '/favorites',
+      name: 'FavoriteListingsPage',
+      auth: true, // user must be signed in to view this page
+      authPage: 'LoginPage',
+      component: FavoriteListingsPage,
+      loadData: pageDataLoadingAPI.FavoriteListingsPage.loadData,
+    },
+    {
+      path: '/carts',
+      name: 'CartListingsPage',
+      auth: true, // user must be signed in to view this page
+      authPage: 'LoginPage',
+      component: CartListingsPage,
+      loadData: pageDataLoadingAPI.CartListingsPage.loadData,
+    },
+    {
       path: '/s',
       name: 'SearchPage',
       ...authForPrivateMarketplace,
       component: SearchPage,
       loadData: pageDataLoadingAPI.SearchPage.loadData,
     },
+   
+
     {
       path: '/l',
       name: 'ListingBasePage',
