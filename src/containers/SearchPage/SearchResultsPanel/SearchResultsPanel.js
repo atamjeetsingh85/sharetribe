@@ -25,7 +25,7 @@ const SearchResultsPanel = props => {
   const {
     className,
     rootClassName,
-    listings = [],
+    cartListings = [],
     pagination,
     search,
     setActiveListing,
@@ -74,7 +74,7 @@ const SearchResultsPanel = props => {
   return (
     <div className={classes} >
       <div className={isMapVariant ? css.listingCardsMapVariant : css.listingCards}>
-        {listings.map(l =>{
+        {cartListings.map(l =>{
            const isCart = currentUser?.attributes?.profile?.privateData?.carts?.includes(l.id.uuid);
            const toggleCarts = (e) =>   {  
             console.log("toggleCarts",l.id.uuid,isCart);

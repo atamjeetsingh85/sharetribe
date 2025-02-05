@@ -403,7 +403,7 @@ export const ManageListingCard = props => {
     onOpenListing,
     onDiscardDraft,
     onToggleMenu,
-    renderSizes,
+    renderSizes,onTogglePrivateListing
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -447,6 +447,15 @@ export const ManageListingCard = props => {
       Page.preload();
     }
   };
+
+  
+  const handleTogglePrivate = event => {
+    event.preventDefault();
+    event.stopPropagation();
+    const isCurrentlyPrivate = listing.attributes.publicData.isPrivate;
+    onTogglePrivateListing(listing.id, !isCurrentlyPrivate);
+  };
+
 
   const titleClasses = classNames(css.title, {
     [css.titlePending]: isPendingApproval,
@@ -534,6 +543,25 @@ export const ManageListingCard = props => {
                     <FormattedMessage id="ManageListingCard.closeListing" />
                   </InlineTextButton>
                 </MenuItem>
+                <MenuItem key="toggle-private-listing">
+    <InlineTextButton
+      rootClassName={menuItemClasses}
+      onClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!actionsInProgressListingId) {
+          onToggleMenu(null);
+          onTogglePrivateListing(currentListing.id, !currentListing.attributes.publicData.isPrivate);
+        }
+      }}
+    >
+      {currentListing.attributes.publicData.isPrivate ? (
+        <FormattedMessage id="ManageListingCard.makePublic" />
+      ) : (
+        <FormattedMessage id="ManageListingCard.makePrivate" />
+      )}
+    </InlineTextButton>
+  </MenuItem>
               </MenuContent>
             </Menu>
           </div>

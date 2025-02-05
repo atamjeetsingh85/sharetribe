@@ -12,6 +12,11 @@ const RESULT_PAGE_SIZE = 42;
 
 // ================ Action types ================ //
 
+const UPDATE_LISTING_REQUEST = 'app/ManageListingsPage/UPDATE_LISTING_REQUEST';
+const UPDATE_LISTING_SUCCESS = 'app/ManageListingsPage/UPDATE_LISTING_SUCCESS';
+const UPDATE_LISTING_ERROR = 'app/ManageListingsPage/UPDATE_LISTING_ERROR';
+
+
 export const FETCH_LISTINGS_REQUEST = 'app/ManageListingsPage/FETCH_LISTINGS_REQUEST';
 export const FETCH_LISTINGS_SUCCESS = 'app/ManageListingsPage/FETCH_LISTINGS_SUCCESS';
 export const FETCH_LISTINGS_ERROR = 'app/ManageListingsPage/FETCH_LISTINGS_ERROR';
@@ -71,7 +76,7 @@ const updateListingAttributes = (state, listingEntity) => {
   };
 };
 
-const manageListingsPageReducer = (state = initialState, action = {}) => {
+  const manageListingsPageReducer = (state = initialState, action = {}) => {
   const { type, payload } = action;
   switch (type) {
     case CLEAR_OPEN_LISTING_ERROR:
@@ -202,6 +207,11 @@ export const getOwnListingsById = (state, listingIds) => {
 };
 
 // ================ Action creators ================ //
+
+export const updateListingRequest = () => ({ type: UPDATE_LISTING_REQUEST });
+export const updateListingSuccess = listing => ({ type: UPDATE_LISTING_SUCCESS, payload: listing });
+export const updateListingError = error => ({ type: UPDATE_LISTING_ERROR, error: true, payload: error });
+
 
 export const clearOpenListingError = () => ({
   type: CLEAR_OPEN_LISTING_ERROR,
@@ -345,6 +355,21 @@ export const discardDraft = listingId => (dispatch, getState, sdk) => {
     })
     .catch(e => {
       dispatch(discardDraftError(storableError(e)));
+    });
+};
+
+export const updateListing = (listingId, isPrivate) => (dispatch, getState, sdk) => {
+  dispatch(updateListingRequest());
+  return sdk.ownListings
+    .update({
+      id: listingId,
+      publicData: { isPrivate },
+    })
+    .then(response => {
+      dispatch(updateListingSuccess(response.data.data));
+    })
+    .catch(e => {
+      dispatch(updateListingError(storableError(e)));
     });
 };
 

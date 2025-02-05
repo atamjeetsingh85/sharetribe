@@ -31,7 +31,7 @@ import {
   closeListing,
   openListing,
   getOwnListingsById,
-  discardDraft,
+  discardDraft,updateListing
 } from './ManageListingsPage.duck';
 import css from './ManageListingsPage.module.css';
 import DiscardDraftModal from './DiscardDraftModal/DiscardDraftModal';
@@ -125,9 +125,12 @@ export const ManageListingsPageComponent = props => {
     queryInProgress,
     queryListingsError,
     queryParams,
-    scrollingDisabled,
+    scrollingDisabled,onTogglePrivateListing,
     onManageDisableScrolling,
   } = props;
+  
+  
+  const publicListings = listings.filter(listing => !listing.attributes.publicData.isPrivate);
 
   useEffect(() => {
     if (isErrorNoPermissionToPostListings(openingListingError?.error)) {
@@ -232,6 +235,7 @@ export const ManageListingsPageComponent = props => {
                 hasOpeningError={openingErrorListingId.uuid === l.id.uuid}
                 hasClosingError={closingErrorListingId.uuid === l.id.uuid}
                 hasDiscardingError={discardingErrorListingId.uuid === l.id.uuid}
+                onTogglePrivateListing={onTogglePrivateListing}
                 renderSizes={renderSizes}
               />
             ))}
@@ -297,6 +301,7 @@ const mapDispatchToProps = dispatch => ({
   onDiscardDraft: listingId => dispatch(discardDraft(listingId)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onTogglePrivateListing: (listingId, isPrivate) => dispatch(updateListing(listingId, isPrivate)),
 });
 
 const ManageListingsPage = compose(

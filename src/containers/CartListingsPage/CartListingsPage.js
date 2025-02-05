@@ -23,8 +23,8 @@ import css from './CartListingsPage.module.css';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 
 export const CartListingsPageComponent = props => {
-  const { listings, pagination, queryInProgress, queryCartsError, queryParams, scrollingDisabled, intl } = props;
-  console.log('listings', listings);
+  const { cartListings, pagination, queryInProgress, queryCartsError, queryParams, scrollingDisabled, intl } = props;
+  console.log('listings', cartListings);
 
   const hasPaginationInfo = !!pagination && pagination.totalItems != null;
   const listingsAreLoaded = !queryInProgress && hasPaginationInfo;
@@ -100,7 +100,7 @@ export const CartListingsPageComponent = props => {
         <div className={css.listingPanel}>
           {heading}
           <div className={css.listingCards}>
-            {listings?.map(l => (
+            {cartListings?.map(l => (
               <ListingCard
                 className={css.listingCard}
                 key={l.id.uuid}
@@ -116,17 +116,10 @@ export const CartListingsPageComponent = props => {
   );
 };
 
-CartListingsPageComponent.defaultProps = {
-  listings: [],
-  pagination: null,
-  queryCartsError: null,
-  queryParams: null,
-};
 
-const { arrayOf, bool, object } = PropTypes;
-
+const { arrayOf, bool, object } = PropTypes;  
 CartListingsPageComponent.propTypes = {
-  listings: arrayOf(propTypes.listing),
+  cartListings: arrayOf(propTypes.listing),
   pagination: propTypes.pagination,
   queryInProgress: bool.isRequired,
   queryCartsError: propTypes.error,
@@ -138,16 +131,16 @@ CartListingsPageComponent.propTypes = {
 
 const mapStateToProps = state => {
   const {
-    currentPageResultIds,
+    currentCartPageResultIds,
     pagination,
     queryInProgress,
     queryCartsError,
     queryParams,
   } = state.CartListingsPage;
-  const listings = getListingsById(state, currentPageResultIds);
+  const cartListings = getListingsById(state, currentCartPageResultIds);
   return {
-    currentPageResultIds,
-    listings,
+    currentCartPageResultIds,
+    cartListings,
     pagination,
     queryInProgress,
     queryCartsError,

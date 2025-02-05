@@ -17,7 +17,7 @@ const initialState = {
   queryParams: null,
   queryInProgress: false,
   queryCartsError: null,
-  currentPageResultIds: [],
+  currentCartPageResultIds: [],
 };
 
 const cartItemIds = data => data.data.map(l => l.id);
@@ -31,12 +31,12 @@ const cartListingsPageReducer = (state = initialState, action = {}) => {
         queryParams: payload.queryParams,
         queryInProgress: true,
         queryCartsError: null,
-        currentPageResultIds: [],
+        currentCartPageResultIds: [],
       };
     case FETCH_CART_ITEMS_SUCCESS:
       return {
         ...state,
-        currentPageResultIds: cartItemIds(payload.data),
+        currentCartPageResultIds: cartItemIds(payload.data),
         pagination: payload.data.meta,
         queryInProgress: false,
       };
@@ -70,6 +70,7 @@ export const queryCartsError = e => ({
   error: true,
   payload: e,
 });
+
 
 // ================ Thunks ================ //
 
