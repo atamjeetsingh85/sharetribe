@@ -25,16 +25,12 @@ const SearchResultsPanel = props => {
   const {
     className,
     rootClassName,
-    cartListings = [],
+    listings = [],
     pagination,
     search,
     setActiveListing,
     isMapVariant = true,onToggleCarts,currentUser
   } = props;
-
-  console.log("currentUser",currentUser);
-  console.log("onToggleCarts",onToggleCarts);
-
   const classes = classNames(rootClassName || css.root, className);
   const paginationLinks =
     pagination && pagination.totalPages > 1 ? (
@@ -74,7 +70,7 @@ const SearchResultsPanel = props => {
   return (
     <div className={classes} >
       <div className={isMapVariant ? css.listingCardsMapVariant : css.listingCards}>
-        {cartListings.map(l =>{
+        {listings.map(l =>{
            const isCart = currentUser?.attributes?.profile?.privateData?.carts?.includes(l.id.uuid);
            const toggleCarts = (e) =>   {  
             console.log("toggleCarts",l.id.uuid,isCart);

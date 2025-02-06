@@ -77,8 +77,8 @@ export const queryCartsError = e => ({
 export const queryCartItems = queryParams => (dispatch, getState, sdk) => {
   dispatch(queryCartsRequest(queryParams));
   const { currentUser } = getState().user;
-  const { cart } = currentUser?.attributes.profile.privateData || {};
-
+  const  cart = currentUser?.attributes.profile.privateData.carts|| {};
+  console.log("cart",cart); 
   const cartMaybe = cart ? { ids: cart } : {};
   const { perPage, ...rest } = queryParams;
   const params = { ...cartMaybe, ...rest, perPage };

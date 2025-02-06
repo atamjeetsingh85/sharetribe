@@ -42,10 +42,22 @@ const initialState = {
   currentPageResultIds: [],
 };
 
-const resultIds = data => {
+// const resultIds = data => {
+//   const listings = data.data;
+//   return listings
+//     .filter(l => !l.attributes.deleted && l.attributes.state === 'published')
+//     .map(l => l.id);
+// };
+const resultIds = (data, currentUser) => {
   const listings = data.data;
   return listings
-    .filter(l => !l.attributes.deleted && l.attributes.state === 'published')
+    .filter(l => {
+      const isPrivate = l.attributes.publicData?.isPrivate;
+      const isOwner = currentUser && l.relationships.author?.data?.id.uuid === currentUser.id.uuid;
+      
+      // Show public listings OR if the current user is the owner
+      return !isPrivate || isOwner;
+    })
     .map(l => l.id);
 };
 
@@ -63,7 +75,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case SEARCH_LISTINGS_SUCCESS:
       return {
         ...state,
-        currentPageResultIds: resultIds(payload.data),
+        currentPageResultIds: resultIds(payload.data, state.user?.currentUser),
         pagination: payload.data.meta,
         searchInProgress: false,
       };
@@ -123,6 +135,10 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
         }
       : {};
   };
+  const state = getState();
+  const currentUser = state.user?.currentUser; // ✅ Fix: Define currentUser
+  const isAuthenticated = currentUser && currentUser.id; // ✅ Now this works
+
 
   const omitInvalidCategoryParams = params => {
     const categoryConfig = config.search.defaultFilters?.find(f => f.schemaType === 'category');
@@ -259,9 +275,12 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     ...seatsMaybe,
     ...sortMaybe,
     ...searchValidListingTypes(config.listing.listingTypes),
-    perPage,
+    ...searchParams,
+    perPage: RESULT_PAGE_SIZE,
   };
-
+  if (!isAuthenticated) {
+    params.pub_isPrivate = false;
+  }
   return sdk.listings
     .query(params)
     .then(response => {
@@ -269,6 +288,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       
       const listingFields = config?.listing?.listingFields;
       const sanitizeConfig = { listingFields };
+      console.log(response.data.data[0].attributes.publicData.isPrivate, '((( ))) => isPrivate');
 
       dispatch(addMarketplaceEntities(response, sanitizeConfig));
       dispatch(searchListingsSuccess(response));
@@ -281,6 +301,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
         throw e;
       }
     });
+    
 };
 
 export const setActiveListing = listingId => ({
@@ -292,6 +313,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
   // In private marketplace mode, this page won't fetch data if the user is unauthorized
   const state = getState();
   const currentUser = state.user?.currentUser;
+  const isAuthenticated = currentUser && currentUser.id;
   const isAuthorized = currentUser && isUserAuthorized(currentUser);
   const hasViewingRights = currentUser && hasPermissionToViewData(currentUser);
   const isPrivateMarketplace = config.accessControl.marketplace.private === true;
@@ -336,6 +358,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         // when transitioning from search page to listing page
         'publicData.pickupEnabled',
         'publicData.shippingEnabled',
+        'publicData.isPrivate',        
       ],
       'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
       'fields.image': [

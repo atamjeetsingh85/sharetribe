@@ -187,7 +187,7 @@ export class SearchPageComponent extends Component {
   render() {
     const {
       intl,
-      cartListings = [],
+      listings = [],
       location,history,
       onManageDisableScrolling,
       pagination,
@@ -216,6 +216,7 @@ export class SearchPageComponent extends Component {
       isCart,
     });
 console.log('onToggleCarts',onToggleCarts);
+
     const { listingFields } = config?.listing || {};
     const { defaultFilters: defaultFiltersConfig, sortConfig } = config?.search || {};
     const activeListingTypes = config?.listing?.listingTypes.map(config => config.listingType);
@@ -278,7 +279,7 @@ console.log('onToggleCarts',onToggleCarts);
       searchParamsAreInSync && hasPaginationInfo
         ? pagination.totalItems
         : pagination?.paginationUnsupported
-        ? cartListings.length
+        ? listings.length
         : 0;
     const listingsAreLoaded =
       !searchInProgress &&
@@ -314,7 +315,7 @@ console.log('onToggleCarts',onToggleCarts);
     );
 
     const { title, description, schema } = createSearchResultSchema(
-      cartListings,
+      listings,
       searchParamsInURL || {},
       intl,
       routeConfiguration,
@@ -438,7 +439,7 @@ console.log('onToggleCarts',onToggleCarts);
                 ) : null}
                 <SearchResultsPanel
                   className={css.searchListingsPanel}
-                  cartListings={cartListings}
+                  listings={listings}
                   pagination={listingsAreLoaded ? pagination : null}
                   search={parse(location.search)}
                   isMapVariant={false}
@@ -460,7 +461,7 @@ console.log('onToggleCarts',onToggleCarts);
  *
  * @param {Object} props
  * @param {propTypes.currentUser} [props.currentUser] - The current user
- * @param {Array<propTypes.listing>} [props.cartListings] - The listings
+ * @param {Array<propTypes.listing>} [props.listings] - The listings
  * @param {propTypes.pagination} [props.pagination] - The pagination
  * @param {boolean} [props.scrollingDisabled] - Whether the scrolling is disabled
  * @param {boolean} [props.searchInProgress] - Whether the search is in progress
@@ -533,12 +534,11 @@ const mapStateToProps = state => {
     searchListingsError,
     searchParams,
   } = state.SearchPage;
-  const cartListings = getListingsById(state, currentPageResultIds);
-console.log(cartListings, '((( ))) => cartListings');
+  const listings = getListingsById(state, currentPageResultIds);
 
   return {
     currentUser,
-    cartListings,
+    listings,
     pagination,
     scrollingDisabled: isScrollingDisabled(state),
     searchInProgress,

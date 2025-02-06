@@ -374,11 +374,10 @@ export const updateListing = (listingId, isPrivate) => (dispatch, getState, sdk)
     return Promise.reject(error);
   }
   const currentPublicData = currentListing.attributes.publicData || {};
+
   const updatedPublicData = { ...currentPublicData, isPrivate };
-console.log('updateListing', listingId, updatedPublicData);
-console.log('isPrivate', isPrivate);
-console.log('currentListing', currentListing);
-console.log('updatedPublicData', updatedPublicData);
+  console.log(updatedPublicData, '((( ))) => updatedPublicData');
+ console.log(isPrivate,"isPrivate")
   return sdk.ownListings
     .update({ id: listingId, publicData: updatedPublicData }, { expand: true })
     .then(response => {

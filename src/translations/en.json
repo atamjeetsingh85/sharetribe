@@ -406,7 +406,7 @@
   "FilterPlain.clear": "Clear",
   "CartListingsPage.loadingCartListings": "Loading listings…",
   "CartListingsPage.noResults": "You haven't added any value in cart.",
-  "FavoriteListingsPage.queryError": "Query failed. Please try again.",
+  "CartListingsPage.queryError": "Query failed. Please try again.",
   "CartListingsPage.title": "View bikes in your cart",
   "CartListingsPage.youHaveListings": "You have {count} cart {count, plural, one {listing} other {listings}}",
   "SearchResultPanel.addCartButton":"Add to Cart",

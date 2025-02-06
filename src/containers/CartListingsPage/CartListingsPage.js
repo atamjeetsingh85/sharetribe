@@ -25,7 +25,6 @@ import { getListingsById } from '../../ducks/marketplaceData.duck';
 export const CartListingsPageComponent = props => {
   const { cartListings, pagination, queryInProgress, queryCartsError, queryParams, scrollingDisabled, intl } = props;
   console.log('listings', cartListings);
-
   const hasPaginationInfo = !!pagination && pagination.totalItems != null;
   const listingsAreLoaded = !queryInProgress && hasPaginationInfo;
 
