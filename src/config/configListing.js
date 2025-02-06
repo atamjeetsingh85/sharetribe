@@ -53,6 +53,31 @@
  *   - requiredMessage (optional):    Message for those fields, which are mandatory.
  */
 export const listingFields = [
+  {
+    key: 'accessories',
+    scope: 'public',
+    schemaType: 'multi-enum',
+    enumOptions: [
+      { option: 'bell', label: 'Bell' },
+      { option: 'lights', label: 'Lights' },
+      { option: 'lock', label: 'Lock' },
+      { option: 'mudguard', label: 'Mudguard' },
+    ],
+    saveConfig: {
+      label: 'Accessories',
+      placeholderMessage: 'Select an option…',
+      isRequired: false,
+    },
+    filterConfig: {
+      indexForSearch: true,
+      label: 'Accessories',
+      searchMode: 'has_any',
+      group: 'secondary',
+    },
+    showConfig: {
+      label: 'Accessories',
+    },
+  },
   // {
   //   "scope": "public",
   //   "label": "Gears",

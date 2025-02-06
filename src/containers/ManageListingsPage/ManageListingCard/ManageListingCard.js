@@ -402,8 +402,8 @@ export const ManageListingCard = props => {
     onCloseListing,
     onOpenListing,
     onDiscardDraft,
-    onToggleMenu,
-    renderSizes,onTogglePrivateListing
+    onToggleMenu,onTogglePrivateListing,
+    renderSizes,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -449,12 +449,7 @@ export const ManageListingCard = props => {
   };
 
   
-  const handleTogglePrivate = event => {
-    event.preventDefault();
-    event.stopPropagation();
-    const isCurrentlyPrivate = listing.attributes.publicData.isPrivate;
-    onTogglePrivateListing(listing.id, !isCurrentlyPrivate);
-  };
+  
 
 
   const titleClasses = classNames(css.title, {
@@ -551,10 +546,13 @@ export const ManageListingCard = props => {
         event.stopPropagation();
         if (!actionsInProgressListingId) {
           onToggleMenu(null);
-          onTogglePrivateListing(currentListing.id, !currentListing.attributes.publicData.isPrivate);
+          const isPrivate = !currentListing.attributes.publicData.isPrivate;
+          onTogglePrivateListing(currentListing.id.uuid, isPrivate);
+          
         }
       }}
     >
+
       {currentListing.attributes.publicData.isPrivate ? (
         <FormattedMessage id="ManageListingCard.makePublic" />
       ) : (
