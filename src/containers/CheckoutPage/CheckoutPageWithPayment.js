@@ -74,13 +74,13 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
   const deliveryMethod = pageData.orderData?.deliveryMethod;
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
   const hasHelmetFee = pageData.orderData?.helmetFee?.length > 0;
-  const hasextraHelmetFee = pageData.orderData?.extraHelmetFee?.length > 0;
+  const hasExtraHelmetFee = pageData.orderData?.extraHelmetFee?.length > 0;
 
   const { listingType, unitType } = pageData?.listing?.attributes?.publicData || {};
   const protectedDataMaybe = {
     protectedData: {
       ...getTransactionTypeData(listingType, unitType, config),
-      ...deliveryMethodMaybe,
+      ...deliveryMethodMaybe,hasHelmetFee,
       ...shippingDetails,
     },
   };
@@ -98,7 +98,7 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
     listingId: pageData?.listing?.id,
     ...deliveryMethodMaybe,
     hasHelmetFee,
-    hasextraHelmetFee,
+    hasExtraHelmetFee,
     ...quantityMaybe,
     ...seatsMaybe,
     ...bookingDatesMaybe(pageData.orderData?.bookingDates),

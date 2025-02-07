@@ -348,11 +348,11 @@ const calculateLineItems = (
   const { startDate, endDate, seats } = formValues?.values || {};
 
   const seatCount = seats ? parseInt(seats, 10) : 1;
-
+  const hasHelmetFee = formValues.values?.helmetFee;
   const orderData = {
     bookingStart: startDate,
     bookingEnd: endDate,
-    ...(seatsEnabled && { seats: seatCount }),
+    ...(seatsEnabled && { seats: seatCount }),hasHelmetFee,
   };
 
   if (startDate && endDate && !fetchLineItemsInProgress) {
@@ -589,7 +589,7 @@ export const BookingDatesForm = props => {
           lineItems,
           fetchLineItemsError,
           onFetchTimeSlots,helmetFee,extraHelmetFee,
-          form: formApi
+          form: formApi,
         } = formRenderProps;
         
         const formattedHelmetFee = helmetFee
@@ -606,6 +606,16 @@ export const BookingDatesForm = props => {
             name="helmetFee"
             label={helmetFeeLabel}
             value="helmetFee"
+            onChange={event => {
+              onHandleFetchLineItems({
+                values: {
+                  startDate: startDate,
+                  endDate: endDate,
+                  seats: seatsEnabled ? 1 : undefined,
+                  helmetFee: event.target.checked,
+                },
+              });
+            }}
           />
         ) : null;
        
@@ -650,15 +660,15 @@ export const BookingDatesForm = props => {
               ? formValues.values.bookingDates
               : {};
         
-              const hasHelmetFee = formValues.values?.helmetFee?.length > 0;
-              const hasextraHelmetFee = formValues.values?.extraHelmetFee?.length > 0;
+              const hasHelmetFee = formValues.values?.helmetFee;
+              const hasExtraHelmetFee = formValues.values?.extraHelmetFee?.length > 0;
         
           if (startDate && endDate && !fetchLineItemsInProgress) {
             onFetchTransactionLineItems({
               orderData: {
                 bookingStart: startDate,
                 bookingEnd: endDate,
-                hasHelmetFee,hasextraHelmetFee
+                hasHelmetFee,hasExtraHelmetFee
               },
               listingId,
               isOwnListing,
@@ -813,8 +823,6 @@ export const BookingDatesForm = props => {
                 });
               }}
             />
-                {helmetFeeMaybe}
-                {extraHelmetFeeMaybe}
             {seatsEnabled ? (
               <FieldSelect
                 name="seats"
@@ -823,13 +831,22 @@ export const BookingDatesForm = props => {
                 disabled={!(startDate && endDate)}
                 className={css.fieldSeats}
                 onChange={values => {
+                  if (helmetFeeMaybe) {
+                         formApi.change('helmetFee', false);
+                       }
                   onHandleFetchLineItems({
                     values: {
                       startDate: startDate,
                       endDate: endDate,
-                      seats: values,
+                      seats: values, helmetFee: helmetFeeMaybe ? false : undefined,
                     },
                   });
+                  handleFormSpyChange(
+                    listingId,
+                    isOwnListing,
+                    fetchLineItemsInProgress,
+                    onFetchTransactionLineItems
+                  )
                 }}
               >
                 <option disabled value="">
@@ -842,7 +859,7 @@ export const BookingDatesForm = props => {
                 ))}
               </FieldSelect>
             ) : null}
-
+{helmetFeeMaybe}
             {showEstimatedBreakdown ? (
               <div className={css.priceBreakdownContainer}>
                 <H6 as="h3" className={css.bookingBreakdownTitle}>
@@ -883,6 +900,16 @@ export const BookingDatesForm = props => {
                 />
               )}
             </p>
+            {/* <FormSpy
+          subscription={{ values: true }}
+          onChange={handleFormSpyChange(
+            listingId,
+            isOwnListing,
+            fetchLineItemsInProgress,
+            onFetchTransactionLineItems
+          )}
+        /> */}
+
           </Form>
         );
       }}
