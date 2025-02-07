@@ -56,6 +56,12 @@
     margin: 24px 0 12px 0;
   }
 }
+.helmetFeeContainer {
+  margin-top: 24px;
+}
+.extraHelmetFeeContainer {
+  margin-top: 24px;
+}
 
 .finePrint {
   composes: marketplaceTinyFontStyles from global;

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import classNames from 'classnames';
-
+import { formatMoney } from '../../../util/currency';
+import { types as sdkTypes } from '../../../util/sdkLoader';
 import appSettings from '../../../config/settings';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { required, bookingDatesRequired, composeValidators } from '../../../util/validators';
@@ -21,12 +22,12 @@ import { LINE_ITEM_DAY, propTypes } from '../../../util/types';
 import { timeSlotsPerDate } from '../../../util/generators';
 import { BOOKING_PROCESS_NAME } from '../../../transactions/transaction';
 
-import { Form, PrimaryButton, FieldDateRangePicker, FieldSelect, H6 } from '../../../components';
+import { Form, PrimaryButton,FieldDateRangePicker, FieldSelect, H6,FieldCheckbox} from '../../../components';
 
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 
 import css from './BookingDatesForm.module.css';
-
+const { Money } = sdkTypes;
 const TODAY = new Date();
 
 const nextMonthFn = (currentMoment, timeZone, offset = 1) =>
@@ -47,6 +48,7 @@ const getExclusiveEndDate = (date, timeZone) => {
 const getInclusiveEndDate = (date, timeZone) => {
   return getStartOf(date, 'day', timeZone, -1, 'days');
 };
+
 /**
  * Get the range of months that we have already fetched time slots.
  * (This range expands when user clicks Next-button on date picker).
@@ -586,11 +588,45 @@ export const BookingDatesForm = props => {
           values,
           lineItems,
           fetchLineItemsError,
-          onFetchTimeSlots,
-          form: formApi,
+          onFetchTimeSlots,helmetFee,extraHelmetFee,
+          form: formApi
         } = formRenderProps;
-        const { startDate, endDate } = values && values.bookingDates ? values.bookingDates : {};
+        
+        const formattedHelmetFee = helmetFee
+        ? formatMoney(intl, new Money(helmetFee.amount, helmetFee.currency))
+        : null;
+        const helmetFeeLabel = intl.formatMessage(
+          { id: 'BookingDatesForm.helmetFeeLabel' },
+          { fee: formattedHelmetFee }
+        );
+        const helmetFeeMaybe = helmetFee ? (
+          <FieldCheckbox
+            className={css.helmetFeeContainer}
+            id={`${formId}.helmetFee`}
+            name="helmetFee"
+            label={helmetFeeLabel}
+            value="helmetFee"
+          />
+        ) : null;
+       
+        const extraFormattedHelmetFee = extraHelmetFee
+        ? formatMoney(intl, new Money(extraHelmetFee.amount, extraHelmetFee.currency))
+        : null;
 
+        const extraHelmetFeeLabel = intl.formatMessage(
+          { id: 'BookingDatesForm.extraHelmetFeeLabel' },
+          { fee: extraFormattedHelmetFee }
+        );
+         const extraHelmetFeeMaybe = extraHelmetFee ? (
+          <FieldCheckbox
+            className={css.extraHelmetFeeContainer}
+            id={`${formId}.extraHelmetFee`}
+            name="extraHelmetFee"
+            label={extraHelmetFeeLabel}
+            value="extraHelmetFee"
+          />
+        ) : null;
+         const { startDate, endDate } = values && values.bookingDates ? values.bookingDates : {};
         const startDateErrorMessage = intl.formatMessage({
           id: 'FieldDateRangeInput.invalidStartDate',
         });
@@ -603,6 +639,34 @@ export const BookingDatesForm = props => {
         // so we need to pass only booking data that is needed otherwise
         // If you have added new fields to the form that will affect to pricing,
         // you need to add the values to handleOnChange function
+        const handleFormSpyChange = (
+          listingId,
+          isOwnListing,
+          fetchLineItemsInProgress,
+          onFetchTransactionLineItems
+        ) => formValues => {
+          const { startDate, endDate } =
+            formValues.values && formValues.values.bookingDates
+              ? formValues.values.bookingDates
+              : {};
+        
+              const hasHelmetFee = formValues.values?.helmetFee?.length > 0;
+              const hasextraHelmetFee = formValues.values?.extraHelmetFee?.length > 0;
+        
+          if (startDate && endDate && !fetchLineItemsInProgress) {
+            onFetchTransactionLineItems({
+              orderData: {
+                bookingStart: startDate,
+                bookingEnd: endDate,
+                hasHelmetFee,hasextraHelmetFee
+              },
+              listingId,
+              isOwnListing,
+            });
+          }
+        };
+
+
         const breakdownData =
           startDate && endDate
             ? {
@@ -749,7 +813,8 @@ export const BookingDatesForm = props => {
                 });
               }}
             />
-
+                {helmetFeeMaybe}
+                {extraHelmetFeeMaybe}
             {seatsEnabled ? (
               <FieldSelect
                 name="seats"

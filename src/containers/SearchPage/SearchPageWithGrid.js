@@ -45,9 +45,9 @@ import {
   createSearchResultSchema,
   pickListingFieldFilters,
   omitLimitedListingFieldParams,
-  getDatesAndSeatsMaybe,
+  getDatesAndSeatsMaybe, handleToggleCarts,
 } from './SearchPage.shared';
-
+import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import FilterComponent from './FilterComponent';
 import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
 import SearchFiltersMobile from './SearchFiltersMobile/SearchFiltersMobile';
@@ -62,7 +62,7 @@ const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
 // SortBy component has its content in dropdown-popup.
 // With this offset we move the dropdown a few pixels on desktop layout.
 const FILTER_DROPDOWN_OFFSET = -14;
-
+console.log('handleTOggle carts',handleToggleCarts );
 export class SearchPageComponent extends Component {
   constructor(props) {
     super(props);
@@ -188,16 +188,34 @@ export class SearchPageComponent extends Component {
     const {
       intl,
       listings = [],
-      location,
+      location,history,
       onManageDisableScrolling,
       pagination,
       scrollingDisabled,
       searchInProgress,
       searchListingsError,
       searchParams = {},
-      routeConfiguration,
-      config,
+      routeConfiguration,currentUser,
+      config,onUpdateCarts,
     } = this.props;
+
+    // const onToggleCarts = (listingId,isCart) => handleToggleCarts({
+    //   currentUser,
+    //   onUpdateCarts,
+    //   listingId,
+    //   routes: routeConfiguration,isCart,
+    //   location,
+    // });
+    const onToggleCarts = (listingId, isCart) => handleToggleCarts({
+      currentUser,
+      onUpdateCarts,
+      params: { id: listingId },
+      routes: routeConfiguration,
+      location,
+      history,
+      isCart,
+    });
+console.log('onToggleCarts',onToggleCarts);
 
     const { listingFields } = config?.listing || {};
     const { defaultFilters: defaultFiltersConfig, sortConfig } = config?.search || {};
@@ -312,6 +330,8 @@ export class SearchPageComponent extends Component {
 
     // N.B. openMobileMap button is sticky.
     // For some reason, stickyness doesn't work on Safari, if the element is <button>
+
+   
     return (
       <Page
         scrollingDisabled={scrollingDisabled}
@@ -374,7 +394,7 @@ export class SearchPageComponent extends Component {
                   const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
                     filterConfig.key
                   }`;
-
+  
                   return (
                     <FilterComponent
                       key={key}
@@ -423,6 +443,8 @@ export class SearchPageComponent extends Component {
                   pagination={listingsAreLoaded ? pagination : null}
                   search={parse(location.search)}
                   isMapVariant={false}
+                  onToggleCarts={onToggleCarts}
+                  currentUser={currentUser}
                 />
               </div>
             </div>
@@ -496,13 +518,16 @@ const EnhancedSearchPage = props => {
       intl={intl}
       history={history}
       location={location}
+      currentUser={currentUser}
       {...restOfProps}
+      
     />
   );
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const currentUser= state.user.currentUser||null;
+
   const {
     currentPageResultIds,
     pagination,
@@ -526,6 +551,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onUpdateCarts: (payload) => dispatch(updateProfile(payload)), // add this row
+  
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
@@ -540,5 +567,4 @@ const SearchPage = compose(
     mapDispatchToProps
   )
 )(EnhancedSearchPage);
-
 export default SearchPage;

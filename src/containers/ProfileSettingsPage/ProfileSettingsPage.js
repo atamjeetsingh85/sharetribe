@@ -86,7 +86,8 @@ export const ProfileSettingsPageComponent = props => {
   const { userFields, userTypes = [] } = config.user;
 
   const handleSubmit = (values, userType) => {
-    const { firstName, lastName, displayName, bio: rawBio, ...rest } = values;
+    const { firstName, lastName, displayName, bio: rawBio,instagramUrl, ...rest } = values;
+console.log(values, '((( ))) => values');
 
     const displayNameMaybe = displayName
       ? { displayName: displayName.trim() }
@@ -102,6 +103,7 @@ export const ProfileSettingsPageComponent = props => {
       bio,
       publicData: {
         ...pickUserFieldsData(rest, 'public', userType, userFields),
+        instagramUrl
       },
       protectedData: {
         ...pickUserFieldsData(rest, 'protected', userType, userFields),
@@ -133,8 +135,9 @@ export const ProfileSettingsPageComponent = props => {
   } = user?.attributes.profile;
   // I.e. the status is active, not pending-approval or banned
   const isUnauthorizedUser = currentUser && !isUserAuthorized(currentUser);
+console.log(user?.attributes.profile, '((( ))) => user?.attributes.profile');
 
-  const { userType } = publicData || {};
+  const { userType, instagramUrl } = publicData || {};
   const profileImageId = user.profileImage ? user.profileImage.id : null;
   const profileImage = image || { imageId: profileImageId };
   const userTypeConfig = userTypes.find(config => config.userType === userType);
@@ -149,7 +152,7 @@ export const ProfileSettingsPageComponent = props => {
       initialValues={{
         firstName,
         lastName,
-        ...displayNameMaybe,
+        ...displayNameMaybe,instagramUrl,
         bio,
         profileImage: user.profileImage,
         ...initialValuesForUserFields(publicData, 'public', userType, userFields),

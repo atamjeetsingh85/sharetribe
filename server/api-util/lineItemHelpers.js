@@ -290,3 +290,26 @@ exports.hasCommissionPercentage = commission => {
   const isMoreThanZero = percentage > 0;
   return isDefined && isMoreThanZero;
 };
+
+const resolveHelmetFeePrice = listing => {
+  const publicData = listing.attributes.publicData;
+  const helmetFee = publicData && publicData.helmetFee;
+  const { amount, currency } = helmetFee;
+
+  if (amount && currency) {
+    return new Money(amount, currency);
+  }
+
+  return null;
+};
+const resolveExtraHelmetFeePrice = listing => {
+  const publicData = listing.attributes.publicData;
+  const extraHelmetFee = publicData && publicData.extraHelmetFee;
+  const { amount, currency } = extraHelmetFee;
+
+  if (amount && currency) {
+    return new Money(amount, currency);
+  }
+
+  return null;
+};

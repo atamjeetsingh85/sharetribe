@@ -16,12 +16,12 @@ import css from './EditListingPricingPanel.module.css';
 
 const { Money } = sdkTypes;
 
-const getInitialValues = params => {
-  const { listing } = params;
-  const { price } = listing?.attributes || {};
+// const getInitialValues = params => {
+//   const { listing } = params;
+//   const { price } = listing?.attributes || {};
 
-  return { price };
-};
+//   return { price };
+// };
 
 const getListingTypeConfig = (publicData, listingTypes) => {
   const selectedListingType = publicData.listingType;
@@ -64,7 +64,23 @@ const EditListingPricingPanel = props => {
     updateInProgress,
     errors,
   } = props;
+  const getInitialValues = params => {
+    const { listing } = params;
+    const { price, publicData } = listing?.attributes || {};
+  
+    const helmetFee = publicData?.helmetFee || null;
+    const extraHelmetFee = publicData?.extraHelmetFee || null;
 
+    const helmetFeeAsMoney = helmetFee
+      ? new Money(helmetFee.amount, helmetFee.currency)
+      : null;
+    const extraHelmetFeeAsMoney = extraHelmetFee
+      ? new Money(extraHelmetFee.amount, extraHelmetFee.currency)
+      : null;
+
+  
+    return { price, helmetFee: helmetFeeAsMoney, extraHelmetFee: extraHelmetFeeAsMoney };
+  };
   const classes = classNames(rootClassName || css.root, className);
   const initialValues = getInitialValues(props);
   const isPublished = listing?.id && listing?.attributes?.state !== LISTING_STATE_DRAFT;
@@ -84,6 +100,7 @@ const EditListingPricingPanel = props => {
     ? initialValues.price.currency === marketplaceCurrency
     : !!marketplaceCurrency;
   const unitType = listing?.attributes?.publicData?.unitType;
+
 
   return (
     <div className={classes}>
@@ -105,13 +122,17 @@ const EditListingPricingPanel = props => {
           className={css.form}
           initialValues={initialValues}
           onSubmit={values => {
-            const { price } = values;
-
-            // New values for listing attributes
-            const updateValues = {
+            const { price, helmetFee = null,extraHelmetFee=null } = values;
+          
+            const updatedValues = {
               price,
+              publicData: {
+                helmetFee: helmetFee ? { amount: helmetFee.amount, currency: helmetFee.currency } : null, 
+                extraHelmetFee: extraHelmetFee ? { amount: extraHelmetFee.amount, currency: extraHelmetFee.currency } : null,
+          
+              },
             };
-            onSubmit(updateValues);
+            onSubmit(updatedValues);
           }}
           marketplaceCurrency={marketplaceCurrency}
           unitType={unitType}

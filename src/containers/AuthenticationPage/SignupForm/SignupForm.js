@@ -165,12 +165,12 @@ const SignupFormComponent = props => (
                 />
               </div>
 
-              <UserFieldDisplayName
+              {/* <UserFieldDisplayName
                 formName="SignupForm"
                 className={css.row}
                 userTypeConfig={userTypeConfig}
                 intl={intl}
-              />
+              /> */}
 
               <FieldTextInput
                 className={css.password}
@@ -186,7 +186,32 @@ const SignupFormComponent = props => (
                 })}
                 validate={passwordValidators}
               />
-
+<FieldTextInput
+  className={css.confirmPassword}
+  type="password"
+  id={formId ? `${formId}.confirmPassword` : 'confirmPassword'}
+  name="confirmPassword"
+  autoComplete="new-password"
+  label={intl.formatMessage({
+    id: 'SignupForm.confirmPasswordLabel',
+  })}
+  placeholder={intl.formatMessage({
+    id: 'SignupForm.confirmPasswordPlaceholder',
+  })}
+  validate={validators.composeValidators(
+    validators.required(
+      intl.formatMessage({
+        id: 'SignupForm.confirmPasswordRequired',
+      })
+    ),
+    value =>
+      value === values.password
+        ? undefined
+        : intl.formatMessage({
+            id: 'SignupForm.passwordMismatch',
+          })
+  )}
+/>
               <UserFieldPhoneNumber
                 formName="SignupForm"
                 className={css.row}

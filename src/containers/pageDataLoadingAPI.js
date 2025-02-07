@@ -21,6 +21,8 @@ import {
   loadData as TransactionPageLoader,
   setInitialValues as TransactionPageInitialValues,
 } from './TransactionPage/TransactionPage.duck';
+import { loadData as FavoriteListingsPageLoader } from './FavoriteListingsPage/FavoriteListingsPage.duck';
+import { loadData as CartListingsPageLoader } from './CartListingsPage/CartListingsPage.duck';
 
 const getPageDataLoadingAPI = () => {
   return {
@@ -30,6 +32,13 @@ const getPageDataLoadingAPI = () => {
     LandingPage: {
       loadData: LandingPageLoader,
     },
+    FavoriteListingsPage: {
+      loadData: FavoriteListingsPageLoader,
+    }, 
+    CartListingsPage: {
+      loadData: CartListingsPageLoader,
+    },
+
     CheckoutPage: {
       setInitialValues: CheckoutPageInitialValues,
     },

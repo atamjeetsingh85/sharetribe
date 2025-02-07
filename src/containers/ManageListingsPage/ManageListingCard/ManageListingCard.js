@@ -402,7 +402,7 @@ export const ManageListingCard = props => {
     onCloseListing,
     onOpenListing,
     onDiscardDraft,
-    onToggleMenu,
+    onToggleMenu,onTogglePrivateListing,
     renderSizes,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -447,6 +447,10 @@ export const ManageListingCard = props => {
       Page.preload();
     }
   };
+
+  
+  
+
 
   const titleClasses = classNames(css.title, {
     [css.titlePending]: isPendingApproval,
@@ -534,6 +538,28 @@ export const ManageListingCard = props => {
                     <FormattedMessage id="ManageListingCard.closeListing" />
                   </InlineTextButton>
                 </MenuItem>
+                <MenuItem key="toggle-private-listing">
+    <InlineTextButton
+      rootClassName={menuItemClasses}
+      onClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!actionsInProgressListingId) {
+          onToggleMenu(null);
+          const isPrivate = !currentListing.attributes.publicData.isPrivate;
+          onTogglePrivateListing(currentListing.id.uuid, isPrivate);
+          
+        }
+      }}
+    >
+
+      {currentListing.attributes.publicData.isPrivate ? (
+        <FormattedMessage id="ManageListingCard.makePublic" />
+      ) : (
+        <FormattedMessage id="ManageListingCard.makePrivate" />
+      )}
+    </InlineTextButton>
+  </MenuItem>
               </MenuContent>
             </Menu>
           </div>

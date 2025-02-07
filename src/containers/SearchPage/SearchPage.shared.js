@@ -495,3 +495,95 @@ export const getDatesAndSeatsMaybe = (currentParams, newParams) => {
       : { seats: null, dates: null };
   return datesAndSeatsMaybe;
 };
+
+export const handleToggleCarts = (parameters = {}) => {
+  const { currentUser, routes, location, history, params, onUpdateCarts, isCart } = parameters;
+
+  // Only allow signed-in users to save favorites
+  if (!currentUser) {
+    const state = {
+      from: `${location.pathname}${location.search}${location.hash}`,
+    };
+
+    // Sign up and return back to the listing page.
+    history.push(
+      createResourceLocatorString('SignupPage', routes, {}, {}),
+      state
+    );
+  } else {
+    const {
+      attributes: { profile },
+    } = currentUser;
+    const { carts = [] } = profile.privateData || {};
+
+    let payload;
+
+    if (!profile.privateData || !profile.privateData?.carts) {
+      payload = {
+        privateData: {
+          carts: [params.id],
+        },
+      };
+    } else if (isCart) {
+      payload = {
+        privateData: {
+          carts: carts.filter(c => c !== params.id),
+        },
+      };
+    } else {
+      payload = {
+        privateData: {
+          carts: [...carts, params.id],
+        },
+      };
+    }
+    onUpdateCarts(payload);
+  }
+};
+
+// export const handleToggleCarts =( parameters= {}) => isCart => {
+//   console.log( '((( ))) =>');
+  
+//   const { currentUser, routes, location, history  } = parameters;
+//   // Only allow signed-in users to save favorites
+//   if (!currentUser) {
+//     const state = {
+//       from: `${location.pathname}${location.search}${location.hash}`,
+//     };
+
+//     // Sign up and return back to the listing page.
+//     history.push(
+//       createResourceLocatorString('SignupPage', routes, {}, {}),
+//       state
+//     );
+//   } else {
+//     const { params, onUpdateCarts } = parameters;
+//     const {
+//       attributes: { profile },
+//     } = currentUser;
+//     const { carts = [] } = profile.privateData || {};
+
+//     let payload;
+
+//     if (!profile.privateData || !profile.privateData?.carts) {
+//       payload = {
+//         privateData: {
+//           carts: [params.id],
+//         },
+//       };
+//     } else if (isCart) {
+//       payload = {
+//         privateData: {
+//           carts: carts.filter(c => c!== params.id),
+//         },
+//       };
+//     } else {
+//       payload = {
+//         privateData: {
+//           carts: [...carts, params.id],
+//         },
+//       };
+//     }
+//     onUpdateCarts(payload);
+//   }
+// };
