@@ -129,7 +129,7 @@ const EditListingPricingPanel = props => {
               publicData: {
                 helmetFee: helmetFee ? { amount: helmetFee.amount, currency: helmetFee.currency } : null, 
                 extraHelmetFee: extraHelmetFee ? { amount: extraHelmetFee.amount, currency: extraHelmetFee.currency } : null,
-          
+
               },
             };
             onSubmit(updatedValues);

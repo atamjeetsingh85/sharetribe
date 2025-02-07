@@ -49,14 +49,13 @@ const initialState = {
 //     .map(l => l.id);
 // };
 const resultIds = (data, currentUser) => {
-  const listings = data.data;
-  return listings
+  return data.data
     .filter(l => {
-      const isPrivate = l.attributes.publicData?.isPrivate;
-      const isOwner = currentUser && l.relationships.author?.data?.id.uuid === currentUser.id.uuid;
-      
-      // Show public listings OR if the current user is the owner
-      return !isPrivate || isOwner;
+      const isPrivate = l.attributes.publicData?.isPrivate || false; // Ensure `isPrivate` is a boolean
+      const isOwner =
+        currentUser && l.relationships.author?.data?.id.uuid === currentUser.id.uuid;
+
+      return !isPrivate || isOwner; // Show public listings OR private ones if the user is the owner
     })
     .map(l => l.id);
 };
@@ -75,7 +74,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case SEARCH_LISTINGS_SUCCESS:
       return {
         ...state,
-        currentPageResultIds: resultIds(payload.data, state.user?.currentUser),
+        currentPageResultIds: resultIds(payload.data, payload.currentUser),
         pagination: payload.data.meta,
         searchInProgress: false,
       };
@@ -103,9 +102,9 @@ export const searchListingsRequest = searchParams => ({
   payload: { searchParams },
 });
 
-export const searchListingsSuccess = response => ({
+export const searchListingsSuccess = (response, currentUser) => ({
   type: SEARCH_LISTINGS_SUCCESS,
-  payload: { data: response.data },
+  payload: { data: response.data , currentUser },
 });
 
 export const searchListingsError = e => ({
@@ -136,7 +135,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       : {};
   };
   const state = getState();
-  const currentUser = state.user?.currentUser; // ✅ Fix: Define currentUser
+  const currentUser = state.user?.currentUser||null; // ✅ Fix: Define currentUser
   const isAuthenticated = currentUser && currentUser.id; // ✅ Now this works
 
 
@@ -278,7 +277,11 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     ...searchParams,
     perPage: RESULT_PAGE_SIZE,
   };
-  if (!isAuthenticated) {
+
+
+
+  
+  if (!!isAuthenticated) {
     params.pub_isPrivate = false;
   }
   return sdk.listings
@@ -291,7 +294,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       console.log(response.data.data[0].attributes.publicData.isPrivate, '((( ))) => isPrivate');
 
       dispatch(addMarketplaceEntities(response, sanitizeConfig));
-      dispatch(searchListingsSuccess(response));
+      dispatch(searchListingsSuccess(response,currentUser));
       return response;
     })
     .catch(e => {

@@ -3,7 +3,7 @@ const {
   calculateQuantityFromHours,
   calculateTotalFromLineItems,
   calculateShippingFee,
-  hasCommissionPercentage,
+  hasCommissionPercentage,resolveHelmetFeePrice,
 } = require('./lineItemHelpers');
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
@@ -204,6 +204,17 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
     ...quantityOrSeats,
     includeFor: ['customer', 'provider'],
   };
+  const resolveHelmetFeePrice = listing => {
+  const publicData = listing.attributes.publicData;
+  const helmetFee = publicData && publicData.helmetFee;
+  const { amount, currency } = helmetFee;
+
+  if (amount && currency) {
+    return new Money(amount, currency);
+  }
+
+  return null;
+};
   const helmetFeePrice = orderData.hasHelmetFee ? resolveHelmetFeePrice(listing) : null;
    const helmetFee = helmetFeePrice
     ? [
@@ -213,8 +224,8 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
            quantity: 1,
            includeFor: ['customer', 'provider'],
          },]:[];
-
-         const extraHelmetFeePrice = orderData.hasextraHelmetFee ? resolveHelmetFeePrice(listing) : null;
+  
+         const extraHelmetFeePrice = orderData.hasExtraHelmetFee ? resolveHelmetFeePrice(listing) : null;
          const extraHelmetFee = extraHelmetFeePrice
           ? [
               {
@@ -250,7 +261,8 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
     ? [
         {
           code: 'line-item/provider-commission',
-          unitPrice: calculateTotalFromLineItems([order, ...helmetFee,...extraHelmetFee]),
+          // unitPrice: calculateTotalFromLineItems([order, ...helmetFee,...extraHelmetFee]),
+          unitPrice: calculateTotalFromLineItems([order, ...helmetFee]),
           percentage: getNegation(providerCommission.percentage),
           includeFor: ['provider'],
         },
@@ -275,9 +287,8 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
   // Note: the order matters only if OrderBreakdown component doesn't recognize line-item.
   const lineItems = [
     order,
-    ...extraLineItems,...helmetFee,...extraHelmetFee,
+    ...extraLineItems,...helmetFee,
     ...providerCommissionMaybe,
-    ...customerCommissionMaybe,
   ];
 
   return lineItems;

@@ -66,15 +66,21 @@ const SearchResultsPanel = props => {
       ].join(', ');
     }
   };
-  
+  const filteredListings = listings.filter(l => {
+    const isPrivate = l.attributes.publicData?.isPrivate || false;
+    const isOwner = currentUser && l.id.uuid === currentUser.id.uuid;
+    return !isPrivate || isOwner; // Show public listings OR private listings if user is the owner
+  });
   return (
     <div className={classes} >
       <div className={isMapVariant ? css.listingCardsMapVariant : css.listingCards}>
-        {listings.map(l =>{
+        {filteredListings.map(l =>{
            const isCart = currentUser?.attributes?.profile?.privateData?.carts?.includes(l.id.uuid);
            const toggleCarts = (e) =>   {  
-            console.log("toggleCarts",l.id.uuid,isCart);
             e.preventDefault();
+            if (!onToggleCarts) return; // Ensure function exists
+
+            console.log("toggleCarts",l.id.uuid,isCart);
             onToggleCarts(l.id.uuid, isCart);}
           
        return (<div key={l.id.uuid}> 
@@ -83,11 +89,11 @@ const SearchResultsPanel = props => {
             key={l.id.uuid}
             listing={l}
             renderSizes={cardRenderSizes(isMapVariant)}
-            setActiveListing={setActiveListing}
+            setActiveListing={setActiveListing ? setActiveListing : () => {}}
           />
           <div>
           {isCart ? (
-            <SecondaryButton key={l.id.uuid}
+            <SecondaryButton
 
               className={css.cartButton}
               onClick={toggleCarts}
@@ -95,7 +101,7 @@ const SearchResultsPanel = props => {
               <FormattedMessage id="SearchResultPanel.uncartButton" />
             </SecondaryButton>
           ) : (
-            <Button className={css.cartButton} key={l.id.uuid}
+            <Button className={css.cartButton}
             onClick={toggleCarts}>
               <FormattedMessage id="SearchResultPanel.addCartButton" />
             </Button>
