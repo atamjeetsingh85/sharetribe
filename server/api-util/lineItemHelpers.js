@@ -291,25 +291,34 @@ exports.hasCommissionPercentage = commission => {
   return isDefined && isMoreThanZero;
 };
 
-const resolveHelmetFeePrice = listing => {
+// const resolveHelmetFeePrice = listing => {
+//   const publicData = listing.attributes.publicData;
+//   const helmetFee = publicData && publicData.helmetFee;
+//   const { amount, currency } = helmetFee;
+
+//   if (amount && currency) {
+//     return new Money(amount, currency);
+//   }
+
+//   return null;
+// };
+
+exports.resolveHelmetFeePrice = listing => {
   const publicData = listing.attributes.publicData;
-  const helmetFee = publicData && publicData.helmetFee;
-  const { amount, currency } = helmetFee;
-
-  if (amount && currency) {
-    return new Money(amount, currency);
-  }
-
-  return null;
+  const helmetFee = publicData?.helmetFee;
+  console.log('helmetFee', helmetFee);
+  console.log('public',publicData);
+  return helmetFee?.amount && helmetFee?.currency 
+    ? new Money(helmetFee.amount, helmetFee.currency)
+    : null;
 };
-const resolveExtraHelmetFeePrice = listing => {
+
+exports.resolveExtraServiceFeePrice = listing => {
   const publicData = listing.attributes.publicData;
-  const extraHelmetFee = publicData && publicData.extraHelmetFee;
-  const { amount, currency } = extraHelmetFee;
-
-  if (amount && currency) {
-    return new Money(amount, currency);
-  }
-
-  return null;
+  const extraServiceFee = publicData?.extraServiceFee;
+  console.log('extraServiceFee', extraServiceFee);
+  console.log('public',publicData);
+  return extraServiceFee?.amount && extraServiceFee?.currency 
+    ? new Money(extraServiceFee.amount, extraServiceFee.currency)
+    : null;
 };

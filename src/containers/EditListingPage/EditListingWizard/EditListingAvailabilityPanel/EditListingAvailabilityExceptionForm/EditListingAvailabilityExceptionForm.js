@@ -6,7 +6,7 @@ import { FormattedMessage, useIntl } from '../../../../../util/reactIntl';
 import { AVAILABILITY_MULTIPLE_SEATS } from '../../../../../util/types';
 import { DAY } from '../../../../../transactions/transaction';
 
-import { Form, H3, PrimaryButton } from '../../../../../components';
+import {FieldTextInput, Form, H3, PrimaryButton } from '../../../../../components';
 
 import FieldSeatsInput from '../FieldSeatsInput/FieldSeatsInput';
 import AvailabilitySingleSeatSelector from './AvailabilitySingleSeatSelector';
@@ -87,7 +87,24 @@ const EditListingAvailabilityExceptionForm = props => {
 
         const idPrefix = `${formId}` || 'EditListingAvailabilityExceptionForm';
         const isDaily = unitType === DAY;
-
+        const formState = formApi.getState();
+        const isAvailable = formState.values.availability === 'available';
+        
+        const seatsSelectionMaybe = isAvailable ? (
+          <FieldTextInput
+            className={css.seats}
+            id="seats"
+            name="seats"
+            type="number"
+            min="1"
+            label={intl.formatMessage({
+              id: 'EditListingAvailabilityExceptionForm.seatsLabel',
+            })}
+            placeholder={intl.formatMessage({
+              id: 'EditListingAvailabilityExceptionForm.seatsPlaceholder',
+            })}
+          />
+        ) : null;
         const {
           availability,
           exceptionStartDate,
@@ -167,6 +184,7 @@ const EditListingAvailabilityExceptionForm = props => {
                   values={values}
                 />
               )}
+              {seatsSelectionMaybe}
             </div>
 
             {hasMultipleSeatsInUSe ? (
@@ -179,6 +197,7 @@ const EditListingAvailabilityExceptionForm = props => {
                 intl={intl}
               />
             ) : null}
+
 
             <div className={css.submitButton}>
               {updateListingError ? (

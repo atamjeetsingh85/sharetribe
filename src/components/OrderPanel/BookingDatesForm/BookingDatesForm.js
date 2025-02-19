@@ -19,7 +19,7 @@ import {
   stringifyDateToISO8601,
 } from '../../../util/dates';
 import { LINE_ITEM_DAY, propTypes } from '../../../util/types';
-import { timeSlotsPerDate } from '../../../util/generators';
+import { timeSlotsPerDate} from '../../../util/generators';
 import { BOOKING_PROCESS_NAME } from '../../../transactions/transaction';
 
 import { Form, PrimaryButton,FieldDateRangePicker, FieldSelect, H6,FieldCheckbox} from '../../../components';
@@ -348,11 +348,14 @@ const calculateLineItems = (
   const { startDate, endDate, seats } = formValues?.values || {};
 
   const seatCount = seats ? parseInt(seats, 10) : 1;
-
+  const hasHelmetFee = formValues.values?.helmetFee;
+  const hasExtraServiceFee = formValues.values?.extraServiceFee;
+  console.log(hasHelmetFee,"hasBookingHelmetFee")
+  console.log(hasExtraServiceFee,"hasExtraBookingServiceFee")
   const orderData = {
     bookingStart: startDate,
     bookingEnd: endDate,
-    ...(seatsEnabled && { seats: seatCount }),
+    ...(seatsEnabled && { seats: seatCount }),hasHelmetFee,hasExtraServiceFee
   };
 
   if (startDate && endDate && !fetchLineItemsInProgress) {
@@ -463,6 +466,62 @@ const combineConsecutiveTimeSlots = (slots, startDate) => {
   const indexOfFirstTimeSlot = findIndexOfFirstConsecutiveTimeSlot(slots, startIndex);
   const indexOfLastTimeSlot = findIndexOfLastConsecutiveTimeSlot(slots, startIndex);
 
+// const pickBookingMonthTimeSlots = (
+//   monthlyTimeSlots,
+//   startDate,
+//   endDate,
+//   timeZone
+// ) => {
+//   // The generateMonths generator returns the first day of each month that is spanned
+//   // by the time range between start date and end date.
+//   //const monthsInRange = generateMonths(startDate, endDate, timeZone);
+
+//   return monthsInRange.reduce((timeSlots, firstOfMonth) => {
+//     return [
+//       ...timeSlots,
+//       ...pickMonthlyTimeSlots(monthlyTimeSlots, firstOfMonth, timeZone),
+//     ];
+//   }, []);
+// };
+
+// const getMinSeatsTimeSlot = (
+//   monthlyTimeSlots,
+//   timeZone,
+//   startDate,
+//   endDate
+// ) => {
+//   const timeSlots = pickBookingMonthTimeSlots(
+//     monthlyTimeSlots,
+//     startDate,
+//     endDate,
+//     timeZone
+//   );
+
+//   // Determine the timeslots that fall between start date and end date
+//   const bookingTimeslots = timeSlots.filter(ts => {
+//     const { start, end } = ts.attributes;
+//     return (
+//       // booking start date falls within time slot
+//       (start < startDate && end > startDate) ||
+//       // whole time slot is within booking period
+//       (start >= startDate && end <= endDate) ||
+//       // booking end date falls within time slot
+//       (start < endDate && end > endDate)
+//     );
+//   });
+
+//   // Return the timeslot with the least seats in the booking period
+//   return bookingTimeslots.reduce((minSeats, ts) => {
+//     if (!minSeats?.seats) {
+//       return ts.attributes;
+//     }
+
+//     return ts.attributes.seats < minSeats.seats
+//       ? ts.attributes
+//       : minSeats;
+//   }, {});
+// };
+
   // Combine the consecutive timeslots into a single slot
   const combinedSlot = {
     ...slots[indexOfFirstTimeSlot],
@@ -475,6 +534,9 @@ const combineConsecutiveTimeSlots = (slots, startDate) => {
 
   return [combinedSlot];
 };
+
+
+
 
 /**
  * A form for selecting booking dates.
@@ -588,9 +650,10 @@ export const BookingDatesForm = props => {
           values,
           lineItems,
           fetchLineItemsError,
-          onFetchTimeSlots,helmetFee,extraHelmetFee,
-          form: formApi
+          onFetchTimeSlots,helmetFee,extraServiceFee,
+          form: formApi,
         } = formRenderProps;
+        
         
         const formattedHelmetFee = helmetFee
         ? formatMoney(intl, new Money(helmetFee.amount, helmetFee.currency))
@@ -606,24 +669,44 @@ export const BookingDatesForm = props => {
             name="helmetFee"
             label={helmetFeeLabel}
             value="helmetFee"
+            onChange={event => {
+              onHandleFetchLineItems({
+                values: {
+                  startDate: startDate,
+                  endDate: endDate,
+                  seats: seatsEnabled ? 1 : undefined,
+                  helmetFee: event.target.checked,
+                },
+              });
+            }}
           />
         ) : null;
        
-        const extraFormattedHelmetFee = extraHelmetFee
-        ? formatMoney(intl, new Money(extraHelmetFee.amount, extraHelmetFee.currency))
+        const formattedExtraServiceFee = extraServiceFee
+        ? formatMoney(intl, new Money(extraServiceFee.amount, extraServiceFee.currency))
         : null;
-
-        const extraHelmetFeeLabel = intl.formatMessage(
-          { id: 'BookingDatesForm.extraHelmetFeeLabel' },
-          { fee: extraFormattedHelmetFee }
+console.log(formattedExtraServiceFee,"formattedExtraServiceFee")
+        const extraServiceFeeLabel = intl.formatMessage(
+          { id: 'BookingDatesForm.extraServiceFeeLabel' },
+          { fee: formattedExtraServiceFee }
         );
-         const extraHelmetFeeMaybe = extraHelmetFee ? (
+         const extraServiceFeeMaybe = extraServiceFee ? (
           <FieldCheckbox
-            className={css.extraHelmetFeeContainer}
-            id={`${formId}.extraHelmetFee`}
-            name="extraHelmetFee"
-            label={extraHelmetFeeLabel}
-            value="extraHelmetFee"
+            className={css.extraServiceFeeContainer}
+            id={`${formId}.extraServiceFee`}
+            name="extraServiceFee"
+            label={extraServiceFeeLabel}
+            value="extraServiceFee"
+            onChange={event => {
+              onHandleFetchLineItems({
+                values: {
+                  startDate: startDate,
+                  endDate: endDate,
+                  seats: seatsEnabled ? 1 : undefined,
+                  extraServiceFee: event.target.checked,
+                },
+              });
+            }}
           />
         ) : null;
          const { startDate, endDate } = values && values.bookingDates ? values.bookingDates : {};
@@ -650,22 +733,42 @@ export const BookingDatesForm = props => {
               ? formValues.values.bookingDates
               : {};
         
-              const hasHelmetFee = formValues.values?.helmetFee?.length > 0;
-              const hasextraHelmetFee = formValues.values?.extraHelmetFee?.length > 0;
+              const hasHelmetFee = formValues.values?.helmetFee;
+              const hasExtraServiceFee = formValues.values?.extraServiceFee?.length > 0;
         
           if (startDate && endDate && !fetchLineItemsInProgress) {
             onFetchTransactionLineItems({
               orderData: {
                 bookingStart: startDate,
                 bookingEnd: endDate,
-                hasHelmetFee,hasextraHelmetFee
+                hasHelmetFee,hasExtraServiceFee
               },
               listingId,
               isOwnListing,
             });
           }
         };
-
+        // const getSeatsArray = () => {
+        //   const formState = formApi.getState();
+        //   const { bookingDates } = formState.values;
+        
+        //   if (!bookingDates) {
+        //     return null;
+        //   }
+        
+        //   const minSeatsTimeSlot = getMinSeatsTimeSlot(
+        //     monthlyTimeSlots,
+        //     timeZone,
+        //     bookingDates.startDate,
+        //     bookingDates.endDate
+        //   );
+        
+        //   // Return an array of the seat options a customer
+        //   // can pick for the time range
+        //   return Array(minSeatsTimeSlot.seats)
+        //     .fill()
+        //     .map((_, i) => i + 1);
+        // };
 
         const breakdownData =
           startDate && endDate
@@ -813,8 +916,15 @@ export const BookingDatesForm = props => {
                 });
               }}
             />
-                {helmetFeeMaybe}
-                {extraHelmetFeeMaybe}
+                  {/* <FieldDateRangeInput
+        className={css.bookingDates}
+        disabled={fetchLineItemsInProgress}
+        onClose={event =>
+          setCurrentMonth(getStartOf(event?.startDate ?? startOfToday, 'month', timeZone))
+        }
+      seatsArray={getSeatsArray()}
+       seatsLabel={intl.formatMessage({ id: 'BookingDatesForm.seatsTitle' })}
+      /> */}
             {seatsEnabled ? (
               <FieldSelect
                 name="seats"
@@ -823,13 +933,26 @@ export const BookingDatesForm = props => {
                 disabled={!(startDate && endDate)}
                 className={css.fieldSeats}
                 onChange={values => {
+                  if (helmetFeeMaybe) {
+                         formApi.change('helmetFee', false);
+                       }
+                        if (extraServiceFeeMaybe) {
+                          formApi.change('extraServiceFee', false);
+                        }
                   onHandleFetchLineItems({
                     values: {
                       startDate: startDate,
                       endDate: endDate,
-                      seats: values,
+                      seats: values, helmetFee: helmetFeeMaybe ? false : undefined,
+                      extraServiceFee: extraServiceFeeMaybe ? false : undefined,
                     },
                   });
+                  handleFormSpyChange(
+                    listingId,
+                    isOwnListing,
+                    fetchLineItemsInProgress,
+                    onFetchTransactionLineItems
+                  )
                 }}
               >
                 <option disabled value="">
@@ -842,7 +965,8 @@ export const BookingDatesForm = props => {
                 ))}
               </FieldSelect>
             ) : null}
-
+{helmetFeeMaybe}
+{extraServiceFeeMaybe}
             {showEstimatedBreakdown ? (
               <div className={css.priceBreakdownContainer}>
                 <H6 as="h3" className={css.bookingBreakdownTitle}>
@@ -883,6 +1007,16 @@ export const BookingDatesForm = props => {
                 />
               )}
             </p>
+            {/* <FormSpy
+          subscription={{ values: true }}
+          onChange={handleFormSpyChange(
+            listingId,
+            isOwnListing,
+            fetchLineItemsInProgress,
+            onFetchTransactionLineItems
+          )}
+        /> */}
+
           </Form>
         );
       }}

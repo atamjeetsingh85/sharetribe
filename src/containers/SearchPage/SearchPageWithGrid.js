@@ -198,7 +198,7 @@ export class SearchPageComponent extends Component {
       routeConfiguration,currentUser,
       config,onUpdateCarts,
     } = this.props;
-
+console.log(searchParams,"searchParams")
     // const onToggleCarts = (listingId,isCart) => handleToggleCarts({
     //   currentUser,
     //   onUpdateCarts,

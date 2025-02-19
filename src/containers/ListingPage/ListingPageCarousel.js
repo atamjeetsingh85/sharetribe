@@ -42,6 +42,7 @@ import {
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
+import SectionServiceHistoryMaybe from './SectionServiceHistory.js';
 
 // Shared components
 import {
@@ -133,6 +134,8 @@ export const ListingPageComponent = props => {
     showOwnListingsOnly,
   } = props;
 
+
+  // console.log("month",monthlyTimeSlots)
   const listingConfig = config.listing;
   const listingId = new UUID(rawParams.id);
   const isVariant = rawParams.variant != null;
@@ -357,6 +360,7 @@ export const ListingPageComponent = props => {
                 }}
               />
             ) : null}
+        
             <SectionGallery
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
@@ -380,6 +384,7 @@ export const ListingPageComponent = props => {
    text={publicData.extraFeatures}
   heading={intl.formatMessage({ id: 'ListingPage.extraFeaturesTitle' })}
 />
+<SectionServiceHistoryMaybe publicData={publicData} intl={intl}/>
             <SectionMapMaybe
               geolocation={geolocation}
               publicData={publicData}

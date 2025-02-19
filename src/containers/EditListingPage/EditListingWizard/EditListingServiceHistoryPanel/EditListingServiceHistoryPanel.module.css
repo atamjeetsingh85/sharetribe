@@ -1,0 +1,55 @@
+/* Root container styling */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  background-color: var(--colorBackgroundPanel);
+  border-radius: var(--borderRadiusLarge);
+  box-shadow: var(--boxShadowPanel);
+}
+
+/* Title styling */
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--colorTextPrimary);
+  margin-bottom: 1rem;
+}
+
+/* Form container styling */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Error message styling */
+.error {
+  color: var(--colorError);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Submit button styling */
+.submitButton {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--colorTextButton);
+  background-color: var(--colorButtonPrimary);
+  border: none;
+  border-radius: var(--borderRadiusMedium);
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.submitButton:disabled {
+  background-color: var(--colorButtonDisabled);
+  cursor: not-allowed;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--colorButtonPrimaryHover);
+}

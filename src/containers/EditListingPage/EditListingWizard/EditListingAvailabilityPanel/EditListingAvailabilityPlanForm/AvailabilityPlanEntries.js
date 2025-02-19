@@ -9,7 +9,7 @@ import {
   InlineTextButton,
   FieldSelect,
   FieldCheckbox,
-  IconDelete,
+  IconDelete,FieldTextInput
 } from '../../../../../components';
 
 import FieldSeatsInput from '../FieldSeatsInput/FieldSeatsInput';
@@ -315,15 +315,26 @@ const FieldHidden = props => {
  * @returns {JSX.Element} component rendering a hidden form fields for 'startTime' and 'endTime'.
  */
 const TimeRangeHidden = props => {
-  const { name } = props;
+  const { name, value, onChange, intl } = props;
   return (
-    <div className={css.timeRangeHidden}>
-      <FieldHidden name={`${name}.startTime`} />
-      <FieldHidden name={`${name}.endTime`} />
+    <div>
+      <div className={css.formRowHidden}>
+        <FieldHidden name={`${name}.startTime`} />
+        <FieldHidden name={`${name}.endTime`} />
+      </div>
+      <FieldTextInput
+        name={`${name}.seats`}
+        type="number"
+        initialValue={value.seats}
+        placeholder={intl.formatMessage({
+          id: 'EditListingAvailabilityPlanForm.seatsPlaceholder',
+        })}
+        min="1"
+        onChange={onChange}
+      />
     </div>
   );
 };
-
 /**
  * Show input element to add the number of seats and include hidden inputs for time range.
  *
@@ -397,7 +408,7 @@ const AvailabilityPlanEntries = props => {
                 formApi.mutators.push(dayOfWeek, {
                   startTime: '00:00',
                   endTime: '24:00',
-                  ...seats,
+                  seats: 1,
                 });
               } else {
                 formApi.mutators.remove(dayOfWeek, 0);
@@ -444,8 +455,18 @@ const AvailabilityPlanEntries = props => {
                     intl={intl}
                   />
                 ) : useFullDays ? (
-                  <TimeRangeHidden name={name} key={name} />
-                ) : (
+                  <TimeRangeHidden
+                  name={name}
+                  key={name}
+                  intl={intl}
+                  value={entries[0]}
+                  onChange={e => {
+                    const { value } = e.currentTarget;
+                    const { values } = formApi.getState();
+                    const currentPlan = values[dayOfWeek][0];
+                    formApi.mutators.update(dayOfWeek, 0, { ...currentPlan, seats: value });
+                  }}
+                />                ) : (
                   <TimeRangeSelects
                     key={name}
                     name={name}

@@ -3,7 +3,7 @@ const {
   calculateQuantityFromHours,
   calculateTotalFromLineItems,
   calculateShippingFee,
-  hasCommissionPercentage,
+  hasCommissionPercentage, resolveHelmetFeePrice,resolveExtraServiceFeePrice
 } = require('./lineItemHelpers');
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
@@ -27,26 +27,26 @@ const getItemQuantityAndLineItems = (orderData, publicData, currency) => {
   // Calculate shipping fee if applicable
   const shippingFee = isShipping
     ? calculateShippingFee(
-        shippingPriceInSubunitsOneItem,
-        shippingPriceInSubunitsAdditionalItems,
-        currency,
-        quantity
-      )
+      shippingPriceInSubunitsOneItem,
+      shippingPriceInSubunitsAdditionalItems,
+      currency,
+      quantity
+    )
     : null;
 
   // Add line-item for given delivery method.
   // Note: by default, pickup considered as free.
   const deliveryLineItem = !!shippingFee
     ? [
-        {
-          code: 'line-item/shipping-fee',
-          unitPrice: shippingFee,
-          quantity: 1,
-          includeFor: ['customer', 'provider'],
-        },
-      ]
+      {
+        code: 'line-item/shipping-fee',
+        unitPrice: shippingFee,
+        quantity: 1,
+        includeFor: ['customer', 'provider'],
+      },
+    ]
     : isPickup
-    ? [
+      ? [
         {
           code: 'line-item/pickup-fee',
           unitPrice: new Money(0, currency),
@@ -54,7 +54,7 @@ const getItemQuantityAndLineItems = (orderData, publicData, currency) => {
           includeFor: ['customer', 'provider'],
         },
       ]
-    : [];
+      : [];
 
   return { quantity, extraLineItems: deliveryLineItem };
 };
@@ -156,14 +156,14 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
     unitType === 'item'
       ? getItemQuantityAndLineItems(orderData, publicData, currency)
       : unitType === 'hour' && orderData.seats
-      ? getHoursWithSeatsAndLineItems(orderData)
-      : unitType === 'hour'
-      ? getHourQuantityAndLineItems(orderData)
-      : ['day', 'night'].includes(unitType) && orderData.seats
-      ? getDateRangeWithSeatsAndLineItems(orderData, code)
-      : ['day', 'night'].includes(unitType)
-      ? getDateRangeQuantityAndLineItems(orderData, code)
-      : {};
+        ? getHoursWithSeatsAndLineItems(orderData)
+        : unitType === 'hour'
+          ? getHourQuantityAndLineItems(orderData)
+          : ['day', 'night'].includes(unitType) && orderData.seats
+            ? getDateRangeWithSeatsAndLineItems(orderData, code)
+            : ['day', 'night'].includes(unitType)
+              ? getDateRangeQuantityAndLineItems(orderData, code)
+              : {};
 
   const { quantity, units, seats, extraLineItems } = quantityAndExtraLineItems;
 
@@ -197,42 +197,34 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
    * By default OrderBreakdown prints line items inside LineItemUnknownItemsMaybe if the lineItem code is not recognized. */
 
   const quantityOrSeats = !!units && !!seats ? { units, seats } : { quantity };
-  
+
   const order = {
     code,
     unitPrice,
     ...quantityOrSeats,
     includeFor: ['customer', 'provider'],
   };
+  
   const helmetFeePrice = orderData.hasHelmetFee ? resolveHelmetFeePrice(listing) : null;
-   const helmetFee = helmetFeePrice
+  const helmetFee = helmetFeePrice
     ? [
-        {
-          code: 'line-item/helmet-rental-fee',
-           unitPrice: helmetFeePrice,
-           quantity: 1,
-           includeFor: ['customer', 'provider'],
-         },]:[];
+      {
+        code: 'line-item/helmet-rental-fee',
+        unitPrice: helmetFeePrice,
+        quantity: 1,
+        includeFor: ['customer', 'provider'],
+      },]
+    : [];
 
-         const extraHelmetFeePrice = orderData.hasextraHelmetFee ? resolveHelmetFeePrice(listing) : null;
-         const extraHelmetFee = extraHelmetFeePrice
-          ? [
-              {
-                code: 'line-item/extra-helmet-rental-fee',
-                 unitPrice: extraHelmetFeePrice,
-                 quantity: 1,
-                 includeFor: ['customer', 'provider'],
-               },]:[];
-      
-      
-
-
-
-
-
-
-
-
+  const extraServiceFeePrice = orderData.hasExtraServiceFee ? resolveExtraServiceFeePrice(listing) : null;
+  const extraServiceFee = extraServiceFeePrice
+    ? [
+      {
+        code: 'line-item/extraService-rental-fee',
+        unitPrice: extraServiceFeePrice,
+        quantity: 1,
+        includeFor: ['customer', 'provider'],
+      },] : [];
 
   // Provider commission reduces the amount of money that is paid out to provider.
   // Therefore, the provider commission line-item should have negative effect to the payout total.
@@ -248,13 +240,14 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
   // orderPrice - providerCommission = providerPayout
   const providerCommissionMaybe = hasCommissionPercentage(providerCommission)
     ? [
-        {
-          code: 'line-item/provider-commission',
-          unitPrice: calculateTotalFromLineItems([order, ...helmetFee,...extraHelmetFee]),
-          percentage: getNegation(providerCommission.percentage),
-          includeFor: ['provider'],
-        },
-      ]
+      {
+        code: 'line-item/provider-commission',
+        // unitPrice: calculateTotalFromLineItems([order, ...helmetFee,...extraHelmFee]),
+        unitPrice: calculateTotalFromLineItems([order, ...helmetFee,...extraServiceFee]),
+        percentage: getNegation(providerCommission.percentage),
+        includeFor: ['provider'],
+      },
+    ]
     : [];
 
   // The customer commission is what the customer pays for the transaction, and
@@ -262,20 +255,21 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
   // orderPrice + customerCommission = customerPayin
   const customerCommissionMaybe = hasCommissionPercentage(customerCommission)
     ? [
-        {
-          code: 'line-item/customer-commission',
-          unitPrice: calculateTotalFromLineItems([order]),
-          percentage: customerCommission.percentage,
-          includeFor: ['customer'],
-        },
-      ]
+      {
+        code: 'line-item/customer-commission',
+        unitPrice: calculateTotalFromLineItems([order]),
+        percentage: customerCommission.percentage,
+        includeFor: ['customer'],
+      },
+    ]
     : [];
 
   // Let's keep the base price (order) as first line item and provider and customer commissions as last.
   // Note: the order matters only if OrderBreakdown component doesn't recognize line-item.
   const lineItems = [
     order,
-    ...extraLineItems,...helmetFee,...extraHelmetFee,
+    ...extraLineItems,
+    ...helmetFee,...extraServiceFee,
     ...providerCommissionMaybe,
     ...customerCommissionMaybe,
   ];

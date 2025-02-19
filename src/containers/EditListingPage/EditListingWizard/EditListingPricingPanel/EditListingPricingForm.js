@@ -82,7 +82,7 @@ export const EditListingPricingForm = props => (
         updateInProgress = false,
         fetchErrors,
       } = formRenderProps;
-
+console.log(formId,"tyrtrytrytFormId")
       const intl = useIntl();
       const priceValidators = getPriceValidators(
         listingMinimumPriceSubUnits,
@@ -134,15 +134,15 @@ export const EditListingPricingForm = props => (
   currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
 />
 <FieldCurrencyInput
-  id={`${formId}extraHelmetFee`}
-  name="extraHelmetFee"
+  id={`${formId}extraServiceFee`}
+  name="extraServiceFee"
   className={css.input}
   autoFocus={autoFocus}
   label={intl.formatMessage(
-    { id: 'EditListingPricingForm.extraHelmetFee' },
+    { id: 'EditListingPricingForm.extraServiceFee' },
     { unitType }
   )}
-  placeholder={intl.formatMessage({ id: 'EditListingPricingForm.extraHelmetFeePlaceholder' })}
+  placeholder={intl.formatMessage({ id: 'EditListingPricingForm.extraServiceFeePlaceholder' })}
   currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
 />
 

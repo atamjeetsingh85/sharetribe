@@ -52,6 +52,8 @@
  *   - isRequired (optional):         Is the field required for providers to fill
  *   - requiredMessage (optional):    Message for those fields, which are mandatory.
  */
+
+
 export const listingFields = [
   {
     key: 'accessories',
@@ -63,6 +65,10 @@ export const listingFields = [
       { option: 'lock', label: 'Lock' },
       { option: 'mudguard', label: 'Mudguard' },
     ],
+
+    // If you have multiple listing types, you can define the types that should have this field
+// includeForListingTypes: [...],
+
     saveConfig: {
       label: 'Accessories',
       placeholderMessage: 'Select an option…',
@@ -78,6 +84,9 @@ export const listingFields = [
       label: 'Accessories',
     },
   },
+
+
+  
   // {
   //   "scope": "public",
   //   "label": "Gears",

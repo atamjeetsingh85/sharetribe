@@ -40,7 +40,9 @@
 .seatsInput {
   margin-top: 24px;
 }
-
+.seats {
+  margin-top: 24px;
+}
 .submitButton {
   margin-top: auto;
   flex-shrink: 0;
