@@ -51,7 +51,7 @@ import {
 import EditListingWizardTab, {
   DETAILS,
   PRICING,
-  PRICING_AND_STOCK,
+  PRICING_AND_STOCK,SERVICE_HISTORY,
   DELIVERY,  EXTRAFEATURES,
   LOCATION,
   AVAILABILITY,
@@ -67,8 +67,10 @@ import css from './EditListingWizard.module.css';
 //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
 const TABS_DETAILS_ONLY = [DETAILS];
 const TABS_PRODUCT = [DETAILS, PRICING_AND_STOCK, DELIVERY, PHOTOS];
-const TABS_BOOKING = [DETAILS,EXTRAFEATURES,AVAILABILITY, PRICING,LOCATION, PHOTOS];
+
+const TABS_BOOKING = [DETAILS,EXTRAFEATURES,AVAILABILITY,SERVICE_HISTORY, PRICING,LOCATION, PHOTOS];
 const TABS_INQUIRY = [DETAILS, LOCATION, PRICING, PHOTOS];
+
 const TABS_ALL = [...TABS_PRODUCT, ...TABS_BOOKING, ...TABS_INQUIRY];
 
 // Tabs are horizontal in small screens
@@ -125,7 +127,14 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
   } else if (tab === PRICING_AND_STOCK) {
     labelKey = 'EditListingWizard.tabLabelPricingAndStock';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.savePricingAndStock`;
-  } else if (tab === DELIVERY) {
+  } 
+  
+  else if (tab === SERVICE_HISTORY) {
+    labelKey = 'EditListingWizard.tabLabelServiceHistory';
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveServiceHistory`;
+  }
+
+  else if (tab === DELIVERY) {
     labelKey = 'EditListingWizard.tabLabelDelivery';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDelivery`;
   } else if (tab === LOCATION) {
@@ -223,7 +232,7 @@ const tabCompleted = (tab, listing, config) => {
     privateData,
   } = listing.attributes;
   const images = listing.images;
-  const { listingType, transactionProcessAlias, unitType, shippingEnabled, pickupEnabled } =
+  const { listingType, transactionProcessAlias, unitType,serviceHistory, shippingEnabled, pickupEnabled} =
     publicData || {};
   const deliveryOptionPicked = publicData && (shippingEnabled || pickupEnabled);
 
@@ -247,10 +256,13 @@ const tabCompleted = (tab, listing, config) => {
 
     case PRICING_AND_STOCK:
       return !!price;
+
+      case SERVICE_HISTORY:
+        return !!serviceHistory;
+
     case DELIVERY:
       return !!deliveryOptionPicked;
     
-
     case LOCATION:
       return !!(geolocation && publicData?.location?.address);
     case AVAILABILITY:

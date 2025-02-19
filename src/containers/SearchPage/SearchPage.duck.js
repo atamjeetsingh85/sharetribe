@@ -49,9 +49,20 @@ const initialState = {
 //     .map(l => l.id);
 // };
 const resultIds = (data, currentUser) => {
+  if (!data?.data || !Array.isArray(data.data)) {
+    console.error("❌ API response is invalid or missing listings:", data);
+    return [];
+  }
   return data.data
     .filter(l => {
+
+      if (!l || !l.attributes) {
+        console.warn("⚠️ Skipping listing because it is undefined:", l);
+        return false;
+      }
+
       const isPrivate = l.attributes.publicData?.isPrivate || false; // Ensure `isPrivate` is a boolean
+      console.log(l.attributes.publicData?.isPrivate, '((( ))) => isPrivate');
       const isOwner =
         currentUser && l.relationships.author?.data?.id.uuid === currentUser.id.uuid;
 
@@ -288,7 +299,14 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     .query(params)
     .then(response => {
       console.log(response, '((( ))) => response');
-      
+        const listings = response?.data?.data || [];
+        console.log("📡 API Response Data:", response?.data);
+
+    if (listings.length === 0) {
+      console.warn("⚠️ No listings found, showing empty state.");
+      dispatch(searchListingsSuccess({ data: { data: [] } }, currentUser));
+      return;
+    }
       const listingFields = config?.listing?.listingFields;
       const sanitizeConfig = { listingFields };
       console.log(response.data.data[0].attributes.publicData.isPrivate, '((( ))) => isPrivate');
@@ -298,6 +316,8 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       return response;
     })
     .catch(e => {
+      console.error("❌ API Call Failed:", e);
+
       const error = storableError(e);
       dispatch(searchListingsError(error));
       if (!(isErrorUserPendingApproval(error) || isForbiddenError(error))) {

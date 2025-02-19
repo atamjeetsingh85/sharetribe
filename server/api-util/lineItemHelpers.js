@@ -313,14 +313,12 @@ exports.resolveHelmetFeePrice = listing => {
     : null;
 };
 
-const resolveExtraHelmetFeePrice = listing => {
+exports.resolveExtraServiceFeePrice = listing => {
   const publicData = listing.attributes.publicData;
-  const extraHelmetFee = publicData && publicData.extraHelmetFee;
-  const { amount, currency } = extraHelmetFee;
-
-  if (amount && currency) {
-    return new Money(amount, currency);
-  }
-
-  return null;
+  const extraServiceFee = publicData?.extraServiceFee;
+  console.log('extraServiceFee', extraServiceFee);
+  console.log('public',publicData);
+  return extraServiceFee?.amount && extraServiceFee?.currency 
+    ? new Money(extraServiceFee.amount, extraServiceFee.currency)
+    : null;
 };

@@ -69,18 +69,18 @@ const paymentFlow = (selectedPaymentMethod, saveAfterOnetimePayment) => {
 const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config) => {
   const quantity = pageData.orderData?.quantity;
   const quantityMaybe = quantity ? { quantity } : {};
-  const seats = pageData.orderData?.seats;
-  const seatsMaybe = seats ? { seats } : {};
+  // const seats = pageData.orderData?.seats;
+  // const seatsMaybe = seats ? { seats } : {};
   const deliveryMethod = pageData.orderData?.deliveryMethod;
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
   const hasHelmetFee = pageData.orderData?.helmetFee?.length > 0;
-  const hasExtraHelmetFee = pageData.orderData?.extraHelmetFee?.length > 0;
+  const hasExtraServiceFee = pageData.orderData?.extraServiceFee?.length > 0;
 
   const { listingType, unitType } = pageData?.listing?.attributes?.publicData || {};
   const protectedDataMaybe = {
     protectedData: {
       ...getTransactionTypeData(listingType, unitType, config),
-      ...deliveryMethodMaybe,hasHelmetFee,
+      ...deliveryMethodMaybe,hasHelmetFee,hasExtraServiceFee,
       ...shippingDetails,
     },
   };
@@ -98,9 +98,8 @@ const getOrderParams = (pageData, shippingDetails, optionalPaymentParams, config
     listingId: pageData?.listing?.id,
     ...deliveryMethodMaybe,
     hasHelmetFee,
-    hasExtraHelmetFee,
+    hasExtraServiceFee,
     ...quantityMaybe,
-    ...seatsMaybe,
     ...bookingDatesMaybe(pageData.orderData?.bookingDates),
     ...protectedDataMaybe,
     ...optionalPaymentParams,

@@ -245,9 +245,9 @@ const OrderPanel = props => {
   } = props;
   console.log(props,"PROPS")
   const helmetFee = listing?.attributes?.publicData.helmetFee;
-  const extraHelmetFee = listing?.attributes?.publicData.extraHelmetFee;
+  const extraServiceFee = listing?.attributes?.publicData.extraServiceFee;
   console.log(helmetFee,"HELMET")
-    console.log(extraHelmetFee,"EXTRA HELMET FEE")
+    console.log(extraServiceFee,"extra ServiceFee")
 
   const publicData = listing?.attributes?.publicData || {};
   const { listingType, unitType, transactionProcessAlias = '' } = publicData || {};
@@ -450,7 +450,7 @@ const OrderPanel = props => {
             fetchLineItemsError={fetchLineItemsError}
             payoutDetailsWarning={payoutDetailsWarning}
             helmetFee={helmetFee}
-            extraHelmetFee={extraHelmetFee}
+            extraServiceFee={extraServiceFee}
           />
         ) : showProductOrderForm ? (
           <ProductOrderForm

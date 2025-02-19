@@ -69,7 +69,7 @@ const DateLabel = ({ dateId, hasAvailability, timeZone }) => {
 };
 
 const DayScheduleEntry = ({
-  date,
+  date,entry,
   range,
   useFullDays,
   useMultipleSeats,
@@ -88,12 +88,15 @@ const DayScheduleEntry = ({
   const endsAtTheEndOfDay = isSameDate(range.end, startOfNextDay);
   const isFullDay = startsAtTheStartOfDay && endsAtTheEndOfDay;
 
+
+
+
+  console.log(isAvailable ? seats : {}, 'check');
   if (!isAvailable && !isFullDay && setBy === 'plan') {
     // Don't show blocked time-ranges, when it comes from the default schedule.
     // This is mainly done to make date schedules shorter
     return null;
   }
-
   const ex = range.exception;
   const exception = ex ? (
     <ExceptionEntry
@@ -124,6 +127,7 @@ const DayScheduleEntry = ({
                   ? 'EditListingAvailabilityPanel.WeeklyCalendar.available'
                   : 'EditListingAvailabilityPanel.WeeklyCalendar.notAvailable'
               }
+              values={isAvailable ? { seats } : {}}
             />
           </div>
           {useMultipleSeats && !(seats === 0) ? (
@@ -216,7 +220,41 @@ const ExceptionEntry = ({
     </div>
   );
 };
+const AvailableExceptionsInfo = ({
+  availableExceptions,
+  useFullDays,
+  isDaily,
+  timeZone,
+  onDeleteAvailabilityException,
+}) => {
+  const hasAvailableExceptions = availableExceptions.length > 0;
+  const seats = hasAvailableExceptions ? availableExceptions[0].attributes.seats : null;
 
+  return hasAvailableExceptions ? (
+    <>
+      <Heading as="h6" rootClassName={css.exceptionsSubtitle}>
+     
+    <FormattedMessage
+         id="EditListingAvailabilityPanel.WeeklyCalendar.available" values={{ seats }}/>
+
+      </Heading>
+      {availableExceptions.map(exception => {
+        return (
+          <ExceptionEntry
+            key={exception.id.uuid}
+            exception={exception}
+            timeZone={timeZone}
+            useFullDays={useFullDays}
+            isDaily={isDaily}
+            onDeleteAvailabilityException={
+              onDeleteAvailabilityException
+            }
+          />
+        );
+      })}
+    </>
+  ) : null;
+};
 // The calendar date info (related to <DateLabel>)
 const CalendarDate = props => {
   const intl = useIntl();

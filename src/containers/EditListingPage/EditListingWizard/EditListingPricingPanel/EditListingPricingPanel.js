@@ -69,17 +69,17 @@ const EditListingPricingPanel = props => {
     const { price, publicData } = listing?.attributes || {};
   
     const helmetFee = publicData?.helmetFee || null;
-    const extraHelmetFee = publicData?.extraHelmetFee || null;
+    const extraServiceFee = publicData?.extraServiceFee || null;
 
     const helmetFeeAsMoney = helmetFee
       ? new Money(helmetFee.amount, helmetFee.currency)
       : null;
-    const extraHelmetFeeAsMoney = extraHelmetFee
-      ? new Money(extraHelmetFee.amount, extraHelmetFee.currency)
+    const extraServiceFeeAsMoney = extraServiceFee
+      ? new Money(extraServiceFee.amount, extraServiceFee.currency)
       : null;
 
   
-    return { price, helmetFee: helmetFeeAsMoney, extraHelmetFee: extraHelmetFeeAsMoney };
+    return { price, helmetFee: helmetFeeAsMoney, extraServiceFee: extraServiceFeeAsMoney };
   };
   const classes = classNames(rootClassName || css.root, className);
   const initialValues = getInitialValues(props);
@@ -118,17 +118,17 @@ const EditListingPricingPanel = props => {
         )}
       </H3>
       {priceCurrencyValid ? (
-        <EditListingPricingForm
+         <EditListingPricingForm
           className={css.form}
           initialValues={initialValues}
           onSubmit={values => {
-            const { price, helmetFee = null,extraHelmetFee=null } = values;
+             const { price, helmetFee = null,extraServiceFee=null } = values;
           
             const updatedValues = {
               price,
               publicData: {
                 helmetFee: helmetFee ? { amount: helmetFee.amount, currency: helmetFee.currency } : null, 
-                extraHelmetFee: extraHelmetFee ? { amount: extraHelmetFee.amount, currency: extraHelmetFee.currency } : null,
+                extraServiceFee: extraServiceFee ? { amount: extraServiceFee.amount, currency: extraServiceFee.currency } : null,
 
               },
             };
