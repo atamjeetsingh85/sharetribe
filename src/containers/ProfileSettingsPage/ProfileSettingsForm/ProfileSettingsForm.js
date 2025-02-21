@@ -155,7 +155,9 @@ class ProfileSettingsFormComponent extends Component {
           // First name
           const firstNameLabel = intl.formatMessage({
             id: 'ProfileSettingsForm.firstNameLabel',
-          });
+          });     
+              
+
           const firstNamePlaceholder = intl.formatMessage({
             id: 'ProfileSettingsForm.firstNamePlaceholder',
           });
@@ -236,6 +238,7 @@ class ProfileSettingsFormComponent extends Component {
                 {imageFromFile}
                 {avatarComponent}
                 <div className={css.changeAvatar}>
+
                   <FormattedMessage id="ProfileSettingsForm.changeAvatar" />
                 </div>
               </div>
@@ -282,6 +285,24 @@ class ProfileSettingsFormComponent extends Component {
                 <H4 as="h2" className={css.sectionTitle}>
                   <FormattedMessage id="ProfileSettingsForm.yourProfilePicture" />
                 </H4>
+              
+                <div className={css.content}>
+          <div className={css.headingContainer}>
+          <p className={css.formHint}>
+          <FormattedMessage id="ProfileSettingsForm.makeListingsPrivateHint" />
+        </p>
+            <Field
+          id="makeListingsPrivate"
+          name="makeListingsPrivate"
+          type="checkbox"
+          component="input"
+       label={
+    <FormattedMessage id="ProfileSettingsForm.makeListingsPrivateLabel" />
+  }          />
+
+          </div>
+        </div>       
+
                 <Field
                   accept={ACCEPT_IMAGES}
                   id="profileImage"

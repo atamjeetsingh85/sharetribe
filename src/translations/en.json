@@ -1178,6 +1178,8 @@
 "OrderBreakdown.baseUnitDaySeats": "{unitPrice} x {quantity, number} {quantity, plural, one {day} other {days}} x { seats, number } { seats, plural, one {seat} other {seats} } ",
 "OrderBreakdown.baseUnitNightSeats": "{unitPrice} x {quantity, number} {quantity, plural, one {night} other {nights}} x { seats, number } { seats, plural, one {seat} other {seats}}",
 "OrderBreakdown.baseUnitHourSeats": "{unitPrice} x {quantity, number} {quantity, plural, one {hour} other {hours}} x { seats, number } { seats, plural, one {seat} other {seats}}",
-  "EditListingAvailabilityPanel.WeeklyCalendar.availableWithSeats": "Available: {seats} seats"
-
+  "EditListingAvailabilityPanel.WeeklyCalendar.availableWithSeats": "Available: {seats} seats",
+  "ProfileSettingsForm.makeListingsPrivateLabel": "Make all my listings private",
+  "ProfileSettingsForm.makeListingsPrivateHint": "When this is enabled, your listings will not appear in search results."
+  
 }

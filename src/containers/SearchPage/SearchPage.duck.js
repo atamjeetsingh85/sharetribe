@@ -48,6 +48,7 @@ const initialState = {
 //     .filter(l => !l.attributes.deleted && l.attributes.state === 'published')
 //     .map(l => l.id);
 // };
+
 const resultIds = (data, currentUser) => {
   if (!data?.data || !Array.isArray(data.data)) {
     console.error("❌ API response is invalid or missing listings:", data);
@@ -64,8 +65,8 @@ const resultIds = (data, currentUser) => {
       const isPrivate = l.attributes.publicData?.isPrivate || false; // Ensure `isPrivate` is a boolean
       console.log(l.attributes.publicData?.isPrivate, '((( ))) => isPrivate');
       const isOwner =
-        currentUser && l.relationships.author?.data?.id.uuid === currentUser.id.uuid;
-
+        currentUser && l.id.uuid === currentUser.id.uuid;
+console.log(currentUser, '((( ))) => currentUser');
       return !isPrivate || isOwner; // Show public listings OR private ones if the user is the owner
     })
     .map(l => l.id);
@@ -292,7 +293,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
 
 
   
-  if (!!isAuthenticated) {
+  if (isAuthenticated) {
     params.pub_isPrivate = false;
   }
   return sdk.listings
@@ -382,7 +383,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         'publicData.pickupEnabled',
         'publicData.shippingEnabled',
         'publicData.isPrivate',        
-      ],
+      ], pub_isPrivate: isAuthenticated ? undefined : false,
       'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
       'fields.image': [
         'variants.scaled-small',
