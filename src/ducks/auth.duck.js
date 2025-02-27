@@ -2,11 +2,14 @@ import * as log from '../util/log';
 import { storableError } from '../util/errors';
 import { clearCurrentUser, fetchCurrentUser } from './user.duck';
 import { createUserWithIdp } from '../util/api';
-
+import { checkCompanyNameAvailability } from '../../src/util/api';
 const authenticated = authInfo => authInfo?.isAnonymous === false;
 const loggedInAs = authInfo => authInfo?.isLoggedInAs === true;
 
 // ================ Action types ================ //
+export const COMPANY_REQUEST = 'app/auth/COMPANY_REQUEST';
+export const COMPANY_SUCCESS = 'app/auth/COMPANY_SUCCESS';
+export const COMPANY_ERROR = 'app/auth/COMPANY_ERROR';
 
 export const AUTH_INFO_REQUEST = 'app/auth/AUTH_INFO_REQUEST';
 export const AUTH_INFO_SUCCESS = 'app/auth/AUTH_INFO_SUCCESS';
@@ -34,6 +37,11 @@ export const USER_LOGOUT = 'app/USER_LOGOUT';
 // ================ Reducer ================ //
 
 const initialState = {
+   // company name check
+   companyError: null,
+   companyInProgress: false,
+   validCompanyName: null,
+   validCompanyMessage: null,
   isAuthenticated: false,
 
   // is marketplace operator logged in as a marketplace user
@@ -65,6 +73,20 @@ const initialState = {
 export default function reducer(state = initialState, action = {}) {
   const { type, payload } = action;
   switch (type) {
+
+    case COMPANY_REQUEST:
+      return { ...state, companyInProgress: true, companyError: null };
+    case COMPANY_SUCCESS:
+      return { 
+        ...state, 
+        companyInProgress: false, 
+        validCompanyName: payload.validCompanyName, 
+        validCompanyMessage: payload.message, 
+        companyError: null 
+      };
+    case COMPANY_ERROR:
+      return { ...state, companyInProgress: false, companyError: payload };
+
     case AUTH_INFO_REQUEST:
       return state;
     case AUTH_INFO_SUCCESS:
@@ -129,6 +151,12 @@ export const authenticationInProgress = state => {
 };
 
 // ================ Action creators ================ //
+// Action creators for company check
+export const checkCompanyRequest = () => ({ type: COMPANY_REQUEST });
+
+export const checkCompanySuccess = data => ({ type: COMPANY_SUCCESS, payload: data });
+
+export const checkCompanyError = error => ({ type: COMPANY_ERROR, payload: error });
 
 export const authInfoRequest = () => ({ type: AUTH_INFO_REQUEST });
 export const authInfoSuccess = info => ({ type: AUTH_INFO_SUCCESS, payload: info });
@@ -152,6 +180,22 @@ export const confirmError = error => ({ type: CONFIRM_ERROR, payload: error, err
 export const userLogout = () => ({ type: USER_LOGOUT });
 
 // ================ Thunks ================ //
+
+export const checkCompanyname = companyName => async (dispatch, getState) => {
+  dispatch(checkCompanyRequest());
+
+  try {
+    const response = await checkCompanyNameAvailability(companyName); // ✅ Call imported API function
+
+    console.log("Company name check response:", response);
+
+    dispatch(checkCompanySuccess({ validCompanyName: response.isAvailable })); // ✅ Use response correctly
+  } catch (error) {
+    console.error("Error checking company name:", error);
+    dispatch(checkCompanyError(storableError(error)));
+  }
+};
+
 
 export const authInfo = () => (dispatch, getState, sdk) => {
   dispatch(authInfoRequest());
