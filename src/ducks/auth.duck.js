@@ -185,11 +185,10 @@ export const checkCompanyname = companyName => async (dispatch, getState) => {
   dispatch(checkCompanyRequest());
 
   try {
-    const response = await checkCompanyNameAvailability(companyName); // ✅ Call imported API function
-
+    const response = await checkCompanyNameAvailability(companyName); 
     console.log("Company name check response:", response);
 
-    dispatch(checkCompanySuccess({ validCompanyName: response.isAvailable })); // ✅ Use response correctly
+    dispatch(checkCompanySuccess({ validCompanyName: response.isAvailable })); 
   } catch (error) {
     console.error("Error checking company name:", error);
     dispatch(checkCompanyError(storableError(error)));
