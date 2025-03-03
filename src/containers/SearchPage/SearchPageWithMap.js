@@ -561,6 +561,7 @@ export class SearchPageComponent extends Component {
                   search={parse(location.search)}
                   setActiveListing={onActivateListing}
                   isMapVariant
+                  currentUser={this.props.currentUser}
                 />
               </div>
             )}
@@ -669,7 +670,10 @@ const EnhancedSearchPage = props => {
 };
 
 const mapStateToProps = state => {
+  console.log(state, '((( ))) => state');
+  
   const { currentUser } = state.user;
+  console.log(currentUser, '((( ))) => currentUser');
   const {
     currentPageResultIds,
     pagination,

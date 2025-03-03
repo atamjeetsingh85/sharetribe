@@ -1,6 +1,7 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { updateAllListingsToPrivate } from '../../util/api';
 
 import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
@@ -86,7 +87,7 @@ export const ProfileSettingsPageComponent = props => {
   const { userFields, userTypes = [] } = config.user;
 
   const handleSubmit = (values, userType) => {
-    const { firstName, lastName, displayName, bio: rawBio,instagramUrl, ...rest } = values;
+    const { firstName, lastName, displayName, bio: rawBio,instagramUrl,makeListingsPrivate, ...rest } = values;
 console.log(values, '((( ))) => values');
 
     const displayNameMaybe = displayName
@@ -103,7 +104,7 @@ console.log(values, '((( ))) => values');
       bio,
       publicData: {
         ...pickUserFieldsData(rest, 'public', userType, userFields),
-        instagramUrl
+        instagramUrl,      makeListingsPrivate, 
       },
       protectedData: {
         ...pickUserFieldsData(rest, 'protected', userType, userFields),
@@ -121,6 +122,12 @@ console.log(values, '((( ))) => values');
         : profile;
 
     onUpdateProfile(updatedValues);
+    const isPrivate = currentUser.attributes.profile.publicData.makeListingsPrivate;
+    if (isPrivate !== makeListingsPrivate) {
+      const makePrivate = makeListingsPrivate ? 'true' : 'false';
+      updateAllListingsToPrivate({ userId: currentUser.id.uuid, makePrivate });
+    }
+
   };
 
   const user = ensureCurrentUser(currentUser);
@@ -153,7 +160,7 @@ console.log(user?.attributes.profile, '((( ))) => user?.attributes.profile');
         firstName,
         lastName,
         ...displayNameMaybe,instagramUrl,
-        bio,
+        bio, makeListingsPrivate: publicData?.makeListingsPrivate || false,  // Add initial value
         profileImage: user.profileImage,
         ...initialValuesForUserFields(publicData, 'public', userType, userFields),
         ...initialValuesForUserFields(protectedData, 'protected', userType, userFields),

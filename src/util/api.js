@@ -120,6 +120,14 @@ export const initiatePrivileged = body => {
   return post('/api/initiate-privileged', body);
 };
 
+export const updateAllListingsToPrivate = (body) => {
+  return post('/api/update-all-listings', body);
+};
+
+export const checkCompanyNameAvailability = companyName => {
+  return post('/api/check-company-name', { companyName }); 
+};
+
 // Transition a transaction with a privileged transition.
 //
 // This is similar to the `initiatePrivileged` above. It will use the

@@ -527,7 +527,6 @@ const EnhancedSearchPage = props => {
 
 const mapStateToProps = state => {
   const currentUser= state.user.currentUser||null;
-
   const {
     currentPageResultIds,
     pagination,

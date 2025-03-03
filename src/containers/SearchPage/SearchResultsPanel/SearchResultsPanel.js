@@ -66,15 +66,24 @@ const SearchResultsPanel = props => {
       ].join(', ');
     }
   };
-  const filteredListings = listings.filter(l => {
+  {/*
+    const filteredListings = listings.filter(l => {
     const isPrivate = l.attributes.publicData?.isPrivate || false;
-    const isOwner = currentUser && l.id.uuid === currentUser.id.uuid;
+    // const isOwner = currentUser && l.id.uuid === currentUser.id.uuid;single listing private code of a user
+    const isOwner = currentUser && l.author.id.uuid === currentUser.id.uuid;
+    console.log("SearchResultPanel",currentUser.id.uuid);
+    console.log("l.authorh",l.author);
+console.log("l.author.id.uuid",l.author.id.uuid);
+   // return !isPrivate || isOwner;
     return !isPrivate || isOwner; // Show public listings OR private listings if user is the owner
   });
+
+  */}
+
   return (
     <div className={classes} >
       <div className={isMapVariant ? css.listingCardsMapVariant : css.listingCards}>
-        {filteredListings.map(l =>{
+        {listings.map(l =>{
            const isCart = currentUser?.attributes?.profile?.privateData?.carts?.includes(l.id.uuid);
            const toggleCarts = (e) =>   {  
             e.preventDefault();

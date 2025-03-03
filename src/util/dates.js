@@ -1,9 +1,9 @@
 import moment from 'moment-timezone/builds/moment-timezone-with-data-10-year-range.min';
-import { isInclusivelyBeforeDay } from 'react-dates';
+//import { isInclusivelyBeforeDay } from 'react-dates';
 
-export const futureIsOutsideRange = day => {
-  return !isInclusivelyBeforeDay(day, moment());
-}
+// export const futureIsOutsideRange = day => {
+//   return !isInclusivelyBeforeDay(day, moment());
+// }
 /**
  * Input names for the DateRangePicker from DatePicker.
  */

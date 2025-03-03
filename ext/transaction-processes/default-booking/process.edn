@@ -141,21 +141,21 @@
   {:name :transition/expire-review-period,
    :at
    {:fn/plus
-    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P7D"]}]},
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P10D"]}]},
    :actions [],
    :from :state/delivered,
    :to :state/reviewed}
   {:name :transition/expire-provider-review-period,
    :at
    {:fn/plus
-    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P7D"]}]},
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P10D"]}]},
    :actions [{:name :action/publish-reviews}],
    :from :state/reviewed-by-customer,
    :to :state/reviewed}
   {:name :transition/expire-customer-review-period,
    :at
    {:fn/plus
-    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P7D"]}]},
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P10D"]}]},
    :actions [{:name :action/publish-reviews}],
    :from :state/reviewed-by-provider,
    :to :state/reviewed}],
