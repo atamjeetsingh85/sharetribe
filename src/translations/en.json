@@ -1189,5 +1189,9 @@
   "SignupForm.companyNamePlaceholder": "Enter your company name",
   "SignupForm.checkingCompanyName": "Checking availability...",
   "SignupForm.companyNameTaken": "Company name is already taken",
-  "SignupForm.companyNameAvailable": "Company name is available"
+  "SignupForm.companyNameAvailable": "Company name is available",
+  "UnsubscribePage.title": "Unsubscribe",
+"UnsubscribePage.successMessage": "You have been successfully unsubscribed from our emails.",
+"UnsubscribePage.notFoundMessage": "Unsubscription request not found. Please check your email link.",
+"UnsubscribePage.errorMessage": "An error occurred while processing your unsubscription request."
 }

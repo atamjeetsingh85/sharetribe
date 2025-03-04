@@ -1,0 +1,70 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+}
+
+.messagePanel {
+  width: 100%;
+  margin: 24px auto 0 auto;
+  text-align: center;
+  padding: 24px;
+  background: var(--colorBackground);
+  border-radius: 8px;
+  box-shadow: var(--boxShadow);
+
+  @media (--viewportMedium) {
+    margin: 48px auto 0 auto;
+    padding: 32px;
+  }
+
+  @media (--viewportLarge) {
+    margin: 72px auto 0 auto;
+    max-width: calc(var(--contentMaxWidth) + 72px);
+  }
+
+  @media (--viewportXLarge) {
+    max-width: var(--contentMaxWidth);
+  }
+}
+
+.heading {
+  margin: 0 24px 24px 24px;
+  font-size: 1.5rem;
+  color: var(--colorHeading);
+
+  @media (--viewportMedium) {
+    margin: 0 24px 32px 24px;
+    font-size: 1.75rem;
+  }
+
+  @media (--viewportLarge) {
+    margin: 0 36px 32px 36px;
+    font-size: 2rem;
+  }
+}
+
+.text {
+  font-size: 1rem;
+  color: var(--colorText);
+  margin-bottom: 16px;
+
+  @media (--viewportMedium) {
+    font-size: 1.125rem;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 1.25rem;
+  }
+}
+
+.buttonWrapper {
+  margin-top: 24px;
+}
+
+.successMessage {
+  color: var(--colorSuccess);
+}
+
+.errorMessage {
+  color: var(--colorError);
+}

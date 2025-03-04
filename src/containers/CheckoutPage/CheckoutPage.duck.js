@@ -4,7 +4,7 @@ import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/user.duck';
-
+import { addBuffer } from '../../util/dates';
 // ================ Action types ================ //
 
 export const SET_INITIAL_VALUES = 'app/CheckoutPage/SET_INITIAL_VALUES';
@@ -196,8 +196,16 @@ export const initiateOrder = (
 
   const { deliveryMethod, quantity, bookingDates, ...otherOrderParams } = orderParams;
   const quantityMaybe = quantity ? { stockReservationQuantity: quantity } : {};
-  const bookingParamsMaybe = bookingDates || {};
-
+  // const bookingParamsMaybe = bookingDates || {};
+   let bookingParamsMaybe = {};
+   if (bookingDates) {
+    bookingParamsMaybe = {
+      ...bookingDates,
+   bookingEnd: addBuffer(bookingDates.bookingEnd),
+       bookingDisplayEnd: bookingDates.bookingEnd,
+       bookingDisplayStart: bookingDates.bookingStart,
+     }
+   }
   // Parameters only for client app's server
   const orderData = deliveryMethod ? { deliveryMethod } : {};
 

@@ -256,27 +256,49 @@ export const validSGID = message => value => {
 
 export const composeValidators = (...validators) => value =>
   validators.reduce((error, validator) => error || validator(value), VALID);
-
-export const validateCompanyName = (dispatch,
-  requiredMessage,
-  invalidMessage,
-  errorMessage) => async value => {
-  if (!value) {
-    return requiredMessage;
-  }
-
-  try {
-    const response = await dispatch(checkCompanyname(value)); // ✅ Dispatch Redux thunk
-
-    if (!response?.payload?.validCompanyName) {
-      return invalidMessage;
+export const validateCompanyName = (dispatch, requiredMessage, invalidMessage, errorMessage) => 
+  async value => {
+    if (!value) {
+      return requiredMessage;
     }
-  } catch (error) {
-    return errorMessage;
-  }
 
-  return undefined; // No error
+    try {
+      const response = await dispatch(checkCompanyname(value));
+
+      console.log("Company name check response:", response); // ✅ Debugging
+
+      // Adjust this condition based on your actual API response structure
+      if (!response?.payload?.isAvailable) { // Changed to match API response
+        return invalidMessage; // Show error message if name is taken
+      }
+    } catch (error) {
+      console.error("Company name check failed:", error);
+      return errorMessage;
+    }
+
+    return undefined; // No error, name is available
 };
+
+// export const validateCompanyName = (dispatch,
+//   requiredMessage,
+//   invalidMessage,
+//   errorMessage) => async value => {
+//   if (!value) {
+//     return requiredMessage;
+//   }
+
+//   try {
+//     const response = await dispatch(checkCompanyname(value)); // ✅ Dispatch Redux thunk
+
+//     if (!response?.payload?.validCompanyName) {
+//       return invalidMessage;
+//     }
+//   } catch (error) {
+//     return errorMessage;
+//   }
+
+//   return undefined; // No error
+// };
 
 export const validInstaURL = message => value => {
   if (typeof value === 'undefined' || value === null) {

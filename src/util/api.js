@@ -128,6 +128,10 @@ export const checkCompanyNameAvailability = companyName => {
   return post('/api/check-company-name', { companyName }); 
 };
 
+export const unsubscribeUserAPI = uuid => {
+  return post('/api/unsubscribe-user', { uuid }); 
+};
+
 // Transition a transaction with a privileged transition.
 //
 // This is similar to the `initiatePrivileged` above. It will use the

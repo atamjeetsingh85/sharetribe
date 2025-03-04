@@ -121,7 +121,7 @@ const SignupFormComponent = props => {
 
         const classes = classNames(rootClassName || css.root, className);
         const submitInProgress = inProgress;
-        const submitDisabled = invalid || submitInProgress || companyAvailable === false;
+        const submitDisabled = invalid || submitInProgress || companyAvailable === true;
 
 
         return (
@@ -145,24 +145,14 @@ const SignupFormComponent = props => {
   autoComplete="off"
   label={intl.formatMessage({ id: 'SignupForm.companyNameLabel' })}
   placeholder={intl.formatMessage({ id: 'SignupForm.companyNamePlaceholder' })}
-  validate={validators.validateCompanyName(
-    dispatch, 
-    companyNameRequiredMessage, 
-    companyNameInvalidMessage, 
-    companyNameCheckErrorMessage
-  )}
+  // validate={validators.validateCompanyName(
+  //   dispatch, 
+  //   companyNameRequiredMessage, 
+  //   companyNameInvalidMessage, 
+  //   companyNameCheckErrorMessage
+  // )}
 />
-                {checkingCompany && (
-  <p className={css.checking}>{intl.formatMessage({ id: 'SignupForm.checkingCompanyName' })}</p>
-)}
-
-{companyAvailable === false && (
-  <p className={css.error}>{companyNameInvalidMessage}</p> // ✅ Now using localized message
-)}
-
-{companyAvailable === true && (
-  <p className={css.success}>{intl.formatMessage({ id: 'SignupForm.companyNameAvailable' })}</p>
-)}
+      
                 <FieldTextInput
                   type="email"
                   id={formId ? `${formId}.email` : 'email'}

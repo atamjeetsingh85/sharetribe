@@ -23,6 +23,7 @@ import {
 } from './TransactionPage/TransactionPage.duck';
 import { loadData as FavoriteListingsPageLoader } from './FavoriteListingsPage/FavoriteListingsPage.duck';
 import { loadData as CartListingsPageLoader } from './CartListingsPage/CartListingsPage.duck';
+import { loadData as UnsubscribePageLoader } from './UnsubscribePage/UnsubscribePage.duck';
 
 const getPageDataLoadingAPI = () => {
   return {
@@ -78,6 +79,9 @@ const getPageDataLoadingAPI = () => {
     StripePayoutPage: {
       loadData: StripePayoutPageLoader,
     },
+    UnsubscribePage: {
+      loadData:UnsubscribePageLoader,
+    },
     TermsOfServicePage: {
       loadData: TermsOfServicePageLoader,
     },
@@ -85,6 +89,7 @@ const getPageDataLoadingAPI = () => {
       loadData: TransactionPageLoader,
       setInitialValues: TransactionPageInitialValues,
     },
+    
   };
 };
 
