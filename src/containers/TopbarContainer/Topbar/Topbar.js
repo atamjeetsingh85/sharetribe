@@ -333,6 +333,8 @@ const TopbarComponent = props => {
         onResendVerificationEmail={onResendVerificationEmail}
         sendVerificationEmailInProgress={sendVerificationEmailInProgress}
         sendVerificationEmailError={sendVerificationEmailError}
+        isOpen={!!currentUser?.id && !currentUser?.attributes?.emailVerified} // Ensure modal stays open until email is verified
+  onClose={null} // Prevent manual closing
       />
 
       <GenericError show={showGenericError} />

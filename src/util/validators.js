@@ -2,7 +2,8 @@ import toPairs from 'lodash/toPairs';
 import { types as sdkTypes } from './sdkLoader';
 import { diffInTime } from './dates';
 import { extractYouTubeID } from './string';
-
+import { checkCompanyNameAvailability} from '../util/api';
+import { checkCompanyname } from '../ducks/auth.duck';
 const { LatLng, Money } = sdkTypes;
 
 export const PASSWORD_MIN_LENGTH = 8;
@@ -96,7 +97,7 @@ export const bookingDateRequired = inValidDateMessage => value => {
   return !dateIsValid ? inValidDateMessage : VALID;
 };
 
-export const bookingDatesRequired = (inValidStartDateMessage, inValidEndDateMessage) => value => {
+export const bookingDatesRequired = (c, inValidEndDateMessage) => value => {
   const startDateIsValid = value && value.startDate instanceof Date;
   const endDateIsValid = value && value.endDate instanceof Date;
 
@@ -120,6 +121,8 @@ export const emailFormatValid = message => value => {
 export const moneySubUnitAmountAtLeast = (message, minValue) => value => {
   return value instanceof Money && value.amount >= minValue ? VALID : message;
 };
+
+
 
 const parseNum = str => {
   const num = Number.parseInt(str, 10);
@@ -253,6 +256,49 @@ export const validSGID = message => value => {
 
 export const composeValidators = (...validators) => value =>
   validators.reduce((error, validator) => error || validator(value), VALID);
+export const validateCompanyName = (dispatch, requiredMessage, invalidMessage, errorMessage) => 
+  async value => {
+    if (!value) {
+      return requiredMessage;
+    }
+
+    try {
+      const response = await dispatch(checkCompanyname(value));
+
+      console.log("Company name check response:", response); // ✅ Debugging
+
+      // Adjust this condition based on your actual API response structure
+      if (!response?.payload?.isAvailable) { // Changed to match API response
+        return invalidMessage; // Show error message if name is taken
+      }
+    } catch (error) {
+      console.error("Company name check failed:", error);
+      return errorMessage;
+    }
+
+    return undefined; // No error, name is available
+};
+
+// export const validateCompanyName = (dispatch,
+//   requiredMessage,
+//   invalidMessage,
+//   errorMessage) => async value => {
+//   if (!value) {
+//     return requiredMessage;
+//   }
+
+//   try {
+//     const response = await dispatch(checkCompanyname(value)); // ✅ Dispatch Redux thunk
+
+//     if (!response?.payload?.validCompanyName) {
+//       return invalidMessage;
+//     }
+//   } catch (error) {
+//     return errorMessage;
+//   }
+
+//   return undefined; // No error
+// };
 
 export const validInstaURL = message => value => {
   if (typeof value === 'undefined' || value === null) {
