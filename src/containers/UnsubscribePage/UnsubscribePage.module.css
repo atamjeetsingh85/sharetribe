@@ -1,70 +1,56 @@
-@import '../../styles/customMediaQueries.css';
-
 .root {
-}
-
-.messagePanel {
-  width: 100%;
-  margin: 24px auto 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   text-align: center;
-  padding: 24px;
-  background: var(--colorBackground);
+  background-color: #f8f9fa;
+}
+
+.container {
+  max-width: 450px;
+  padding: 30px;
+  background: white;
   border-radius: 8px;
-  box-shadow: var(--boxShadow);
-
-  @media (--viewportMedium) {
-    margin: 48px auto 0 auto;
-    padding: 32px;
-  }
-
-  @media (--viewportLarge) {
-    margin: 72px auto 0 auto;
-    max-width: calc(var(--contentMaxWidth) + 72px);
-  }
-
-  @media (--viewportXLarge) {
-    max-width: var(--contentMaxWidth);
-  }
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.heading {
-  margin: 0 24px 24px 24px;
-  font-size: 1.5rem;
-  color: var(--colorHeading);
-
-  @media (--viewportMedium) {
-    margin: 0 24px 32px 24px;
-    font-size: 1.75rem;
-  }
-
-  @media (--viewportLarge) {
-    margin: 0 36px 32px 36px;
-    font-size: 2rem;
-  }
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
 }
 
-.text {
-  font-size: 1rem;
-  color: var(--colorText);
-  margin-bottom: 16px;
-
-  @media (--viewportMedium) {
-    font-size: 1.125rem;
-  }
-
-  @media (--viewportLarge) {
-    font-size: 1.25rem;
-  }
+.description {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
 }
 
-.buttonWrapper {
-  margin-top: 24px;
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
-.successMessage {
-  color: var(--colorSuccess);
+.unsubscribeButton {
+  background-color: #d9534f;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
 }
 
-.errorMessage {
-  color: var(--colorError);
+.unsubscribeButton:hover {
+  background-color: #c9302c;
+}
+
+.unsubscribeButton:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
 }

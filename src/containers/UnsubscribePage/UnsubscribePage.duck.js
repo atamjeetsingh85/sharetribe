@@ -23,7 +23,7 @@ const initialState = {
         return { ...state, queryInProgress: true, queryError: null, unsubscribeSuccess: false };
   
       case UNSUBSCRIBE_SUCCESS:
-        return { ...state, queryInProgress: false, unsubscribeSuccess: true };
+        return { ...state, queryInProgress: false, unsubscribeSuccess: true ,queryError: null };
   
       case UNSUBSCRIBE_ERROR:
         return { ...state, queryInProgress: false, queryError: payload };
@@ -60,7 +60,6 @@ export const unsubscribeUser = uuid => async dispatch => {
     try {
       const response = await unsubscribeUserAPI(uuid); // Call API
       console.log("Unsubscribe response:", response);
-  
       dispatch(unsubscribeSuccess());
     } catch (error) {
       console.error("Error unsubscribing user:", error);

@@ -41,6 +41,7 @@ const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePag
 const FavoriteListingsPage = loadable(() => import('../containers/FavoriteListingsPage/FavoriteListingsPage'));
 const CartListingsPage = loadable(() => import('../containers/CartListingsPage/CartListingsPage'));
 const UnsubscribePage = loadable(() => import('../containers/UnsubscribePage/UnsubscribePage'));
+
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
   'PasswordChangePage',
@@ -93,7 +94,8 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'UnsubscribePage',
       component: UnsubscribePage,
       loadData: pageDataLoadingAPI.UnsubscribePage.loadData,
-    },
+    }
+,    
     {
       path: '/favorites',
       name: 'FavoriteListingsPage',

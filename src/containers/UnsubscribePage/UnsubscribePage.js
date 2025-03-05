@@ -1,50 +1,89 @@
-// import React from 'react';
-// import { shape, string } from 'prop-types';
-// import { FormattedMessage } from '../../util/reactIntl';
-// import { Page, LayoutSingleColumn } from '../../components';
+import React, { useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { ensureCurrentUser } from '../../util/data';
+import { Page, LayoutSingleColumn, Button, IconSpinner } from '../../components';
+import { connect } from 'react-redux';
+import { isScrollingDisabled } from '../../ducks/ui.duck';
+import { unsubscribeUserAPI } from '../../util/api';
+import css from './UnsubscribePage.module.css';
+import { FormattedMessage } from '../../util/reactIntl';
 
-// import css from './UnsubscribePage.module.css';
+const UnsubscribePage = props => {
+  const history = useHistory();
+  const location = useLocation();
+  const user = ensureCurrentUser(props.currentUser);
+  const uuid = user?.id?.uuid;
+const[success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-// const UnsubscribePage = props => {
-//   const { status } = props;
+  const handleUnsubscribeClick = async () => {
+    if (!uuid) {
+      setError('UnsubscribePage.missingUserId'); 
+      return;
+    }
 
-//   let messageId;
-//   switch (status) {
-//     case 'success':
-//       messageId = 'UnsubscribePage.successMessage';
-//       break;
-//     case 'not_found':
-//       messageId = 'UnsubscribePage.notFoundMessage';
-//       break;
-//     case 'error':
-//     default:
-//       messageId = 'UnsubscribePage.errorMessage';
-//   }
+    setLoading(true);
+    setError(null);
 
-//   return (
-//     <Page title="Unsubscribe">
-//       <LayoutSingleColumn className={css.root}>
-//         <h1 className={css.title}>
-//           <FormattedMessage id="UnsubscribePage.title" />
-//         </h1>
-//         <p className={css.message}>
-//           <FormattedMessage id={messageId} />
-//         </p>
-//       </LayoutSingleColumn>
-//     </Page>
-//   );
-// };
+    try {
+      const response = await unsubscribeUserAPI(uuid);
 
-// UnsubscribePage.propTypes = {
-//   status: string,
-// };
+      if (response.success) {
+        setSuccess(true); 
+      } else {
+        setError(response.message || 'UnsubscribePage.unsubscribeFailed'); 
 
-// export default UnsubscribePage;
+      }
+    } catch (err) {
+      setError('UnsubscribePage.errorMessage');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-import React from 'react';
-
-const UnsubscribePage = () => {
-  return <p>You have successfully unsubscribed.</p>;
+  return (
+    <Page title="Unsubscribe">
+      <LayoutSingleColumn className={css.root}>
+        <div className={css.container}>
+          <h1 className={css.title}>
+            <FormattedMessage id="UnsubscribePage.title" />
+          </h1>
+  
+          {success ? (
+            <p className={css.successMessage}>
+              <FormattedMessage id="UnsubscribePage.successMessage" />
+            </p>
+          ) : (
+            <>
+              <p className={css.description}>
+                <FormattedMessage id="UnsubscribePage.description" />
+              </p>
+  
+              {error && (
+                <p className={css.error}>
+                  <FormattedMessage id={error} />
+                </p>
+              )}
+  
+              <Button className={css.unsubscribeButton} onClick={handleUnsubscribeClick} disabled={loading}>
+                {loading ? <IconSpinner size="small" /> : <FormattedMessage id="UnsubscribePage.buttonText" />}
+              </Button>
+            </>
+          )}
+        </div>
+      </LayoutSingleColumn>
+    </Page>
+  );
 };
 
-export default UnsubscribePage;
+const mapStateToProps = state => {
+  const { currentUser } = state.user;
+  return {
+    currentUser,
+    scrollingDisabled: isScrollingDisabled(state),
+  };
+};
+
+export default connect(mapStateToProps)(UnsubscribePage);
+
